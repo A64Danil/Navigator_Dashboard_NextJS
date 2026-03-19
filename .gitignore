@@ -44,4 +44,5 @@ coverage
 
 # Misc
 *.log
+*.png
 !.eslintrc.json
