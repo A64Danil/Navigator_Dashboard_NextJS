@@ -10,9 +10,10 @@ import { generateModuleDetails } from '../../lib/mockDataGenerator'
  * Response: ModuleDetailsResponse (from src/types/index.ts)
  * Status: 200 (success) | 404 (module not found) | 500 (server error)
  */
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const moduleId = parseInt(params.id)
+    const { id } = await params
+    const moduleId = parseInt(id)
 
     // Validation
     if (isNaN(moduleId) || moduleId < 1 || moduleId > 12) {
