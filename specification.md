@@ -76,6 +76,20 @@
 
 ## 8. Данные для MVP (примерная структура)
 
+**Примерный набор модулей:**
+- Authentication
+- User Profile
+- Dashboard
+- Metrics & Reporting
+- Notifications
+- Integrations
+- Settings
+- API Endpoints
+- Data Export
+- Administration / Audit Logs
+- Billing & Subscription
+- Help & Support
+
 **GET /api/metrics**
 ```json
 {
