@@ -31,7 +31,7 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
   }
 
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+    <div className="p-6">
       <div className="mb-6">
         <p className="text-gray-600 text-sm font-medium mb-2">Overall Coverage</p>
         <p className="text-5xl font-bold text-blue-600">{metrics.overallCoverage}%</p>

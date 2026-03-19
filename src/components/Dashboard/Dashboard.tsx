@@ -44,18 +44,19 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-gray-900">SDD Navigator Dashboard</h1>
-
         {/* Главная метрика */}
         <div className="mb-8">
-          <MetricsCard metrics={metrics || null} isLoading={false} />
+          <h1 className="text-4xl font-bold mb-8 text-gray-900">SDD Navigator Dashboard</h1>
         </div>
 
-        {/* Три графика */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <CoverageChart trend={metrics?.trend || []} isLoading={false} />
-          </div>
+        {/* Coverage Trend - полная ширина */}
+        <div className="mb-8">
+          <CoverageChart trend={metrics?.trend || []} isLoading={false} />
+        </div>
+
+        {/* Три карточки в одну строку - Overall Coverage, Modules by Status, Specifications Coverage */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-6 bg-white border border-gray-200 rounded-lg">
+          <MetricsCard metrics={metrics || null} isLoading={false} />
           <StatusDistributionChart modules={modules} isLoading={false} />
           <SpecsCoverageChart metrics={metrics || null} isLoading={false} />
         </div>

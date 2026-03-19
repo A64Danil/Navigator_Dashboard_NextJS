@@ -35,7 +35,7 @@ export function SpecsCoverageChart({ metrics, isLoading, error }: SpecsCoverageC
   ]
 
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+    <div className="p-6">
       <h3 className="text-lg font-semibold mb-4">Specifications Coverage</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>

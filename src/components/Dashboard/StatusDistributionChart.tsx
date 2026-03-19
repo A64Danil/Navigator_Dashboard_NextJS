@@ -49,7 +49,7 @@ export function StatusDistributionChart({ modules, isLoading, error }: StatusDis
   ]
 
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+    <div className="p-6">
       <h3 className="text-lg font-semibold mb-4">Modules by Status</h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
