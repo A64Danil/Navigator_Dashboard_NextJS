@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { ModulesListResponse, ModuleStatus } from '@/src/types'
 
 interface UseModulesProps {
@@ -26,5 +26,6 @@ export function useModules({ search, statuses, page, limit }: UseModulesProps) {
       return response.json()
     },
     staleTime: 1000 * 60 * 5,
+    placeholderData: keepPreviousData, // Keep previous data while fetching new one
   })
 }
