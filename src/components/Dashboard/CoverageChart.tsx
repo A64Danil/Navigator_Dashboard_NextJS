@@ -45,7 +45,7 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
   })
 
   return (
-    <div className="p-4 bg-white border border-gray-200 rounded-lg">
+    <div>
       <h3 className="text-lg font-semibold mb-4">Coverage Trend (14 days)</h3>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>

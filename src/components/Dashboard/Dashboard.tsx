@@ -74,14 +74,21 @@ export function Dashboard() {
 
         {/* Coverage Trend - полная ширина */}
         <div className="mb-8">
-          <CoverageChart trend={metrics?.trend || []} isLoading={false} />
         </div>
 
-        {/* Три карточки в одну строку - Overall Coverage, Modules by Status, Specifications Coverage */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-4 bg-white border border-gray-200 rounded-lg">
-          <MetricsCard metrics={metrics || null} isLoading={false} />
-          <StatusDistributionChart modules={allModules} isLoading={false} height={chartHeight} />
-          <SpecsCoverageChart metrics={metrics || null} isLoading={false} height={chartHeight} />
+        {/* Grid: первая строка - CoverageChart, вторая строка - три равномерных элемента */}
+        <div className="mb-8 p-4 bg-white border border-gray-200 rounded-lg">
+          {/* Первая строка: CoverageChart на 100% */}
+          <div className="border-b border-gray-200 pb-2 mb-4">
+            <CoverageChart trend={metrics?.trend || []} isLoading={false} />
+          </div>
+          
+          {/* Вторая строка: три равномерных элемента */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <MetricsCard metrics={metrics || null} isLoading={false} />
+            <StatusDistributionChart modules={allModules} isLoading={false} height={chartHeight} />
+            <SpecsCoverageChart metrics={metrics || null} isLoading={false} height={chartHeight} />
+          </div>
         </div>
 
         {/* Секция модулей с фильтрами */}
