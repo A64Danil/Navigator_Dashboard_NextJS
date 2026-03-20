@@ -51,7 +51,8 @@ export function useFilters() {
     if (newQueryString === currentQueryString) return
     if (!newQueryString && !currentQueryString) return
     
-    router.replace(newQueryString ? `?${newQueryString}` : '/', { scroll: false })
+    // Используем текущий path для reset
+    router.replace(newQueryString ? `${currentPath}?${newQueryString}` : currentPath, { scroll: false })
   }, [router, searchQuery, selectedStatuses])
 
   // Оборачиваем setSearchQuery чтобы обновлять URL
