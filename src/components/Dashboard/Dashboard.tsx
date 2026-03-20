@@ -14,6 +14,9 @@ import Link from 'next/link'
 import { ModuleStatus } from '@/src/types'
 
 export function Dashboard() {
+  // Высота для карточек с графиками
+  const chartHeight = 200
+
   // Используем хуки вместо моков
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useMetrics()
 
@@ -75,10 +78,10 @@ export function Dashboard() {
         </div>
 
         {/* Три карточки в одну строку - Overall Coverage, Modules by Status, Specifications Coverage */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-6 bg-white border border-gray-200 rounded-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-4 bg-white border border-gray-200 rounded-lg">
           <MetricsCard metrics={metrics || null} isLoading={false} />
-          <StatusDistributionChart modules={allModules} isLoading={false} />
-          <SpecsCoverageChart metrics={metrics || null} isLoading={false} />
+          <StatusDistributionChart modules={allModules} isLoading={false} height={chartHeight} />
+          <SpecsCoverageChart metrics={metrics || null} isLoading={false} height={chartHeight} />
         </div>
 
         {/* Секция модулей с фильтрами */}

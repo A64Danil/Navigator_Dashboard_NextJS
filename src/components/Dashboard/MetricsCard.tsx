@@ -11,7 +11,7 @@ interface MetricsCardProps {
 export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+      <div className=" bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load metrics</p>
       </div>
     )
@@ -19,7 +19,7 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
 
   if (isLoading || !metrics) {
     return (
-      <div className="p-6 bg-white border border-gray-200 rounded-lg animate-pulse">
+      <div className=" bg-white border border-gray-200 rounded-lg animate-pulse">
         <div className="h-12 bg-gray-200 rounded w-20 mb-4" />
         <div className="space-y-2">
           <div className="h-4 bg-gray-200 rounded w-24" />
@@ -31,7 +31,7 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
   }
 
   return (
-    <div className="p-6">
+    <div className="">
       <div className="mb-6">
         <p className="text-gray-600 text-sm font-medium mb-2">Overall Coverage</p>
         <p className="text-5xl font-bold text-blue-600">{metrics.overallCoverage}%</p>

@@ -16,12 +16,13 @@ interface StatusDistributionChartProps {
   modules: Module[]
   isLoading: boolean
   error?: Error | null
+  height?: number
 }
 
-export function StatusDistributionChart({ modules, isLoading, error }: StatusDistributionChartProps) {
+export function StatusDistributionChart({ modules, isLoading, error, height = 300 }: StatusDistributionChartProps) {
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+      <div className="bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load chart</p>
       </div>
     )
@@ -29,7 +30,7 @@ export function StatusDistributionChart({ modules, isLoading, error }: StatusDis
 
   if (isLoading || !modules || modules.length === 0) {
     return (
-      <div className="p-6 bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
+      <div className="bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
         <div className="h-full bg-gray-200 rounded" />
       </div>
     )
@@ -49,9 +50,9 @@ export function StatusDistributionChart({ modules, isLoading, error }: StatusDis
   ]
 
   return (
-    <div className="p-6">
+    <div className="">
       <h3 className="text-lg font-semibold mb-4">Modules by Status</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />

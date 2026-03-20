@@ -7,12 +7,13 @@ interface SpecsCoverageChartProps {
   metrics: MetricsResponse | null
   isLoading: boolean
   error?: Error | null
+  height?: number
 }
 
-export function SpecsCoverageChart({ metrics, isLoading, error }: SpecsCoverageChartProps) {
+export function SpecsCoverageChart({ metrics, isLoading, error, height = 300 }: SpecsCoverageChartProps) {
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+      <div className="bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load chart</p>
       </div>
     )
@@ -20,7 +21,7 @@ export function SpecsCoverageChart({ metrics, isLoading, error }: SpecsCoverageC
 
   if (isLoading || !metrics) {
     return (
-      <div className="p-6 bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
+      <div className="bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
         <div className="h-full bg-gray-200 rounded" />
       </div>
     )
@@ -35,9 +36,9 @@ export function SpecsCoverageChart({ metrics, isLoading, error }: SpecsCoverageC
   ]
 
   return (
-    <div className="p-6">
+    <div className="">
       <h3 className="text-lg font-semibold mb-4">Specifications Coverage</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
             <Cell fill="#10b981" />
