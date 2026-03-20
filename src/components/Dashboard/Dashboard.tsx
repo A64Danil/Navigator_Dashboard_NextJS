@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useEffect } from 'react'
+import Link from 'next/link'
 import { useMetrics } from '@/src/hooks/useMetrics'
 import { useModules } from '@/src/hooks/useModules'
+import { useFilters } from '@/src/hooks/useFilters'
 import { LoadingSpinner } from '../common/LoadingSpinner'
 import { ErrorMessage } from '../common/ErrorBoundary'
 import { MetricsCard } from './MetricsCard'
@@ -10,41 +12,31 @@ import { CoverageChart } from './CoverageChart'
 import { StatusDistributionChart } from './StatusDistributionChart'
 import { SpecsCoverageChart } from './SpecsCoverageChart'
 import { ModulesTable } from '../ModulesList/ModulesTable'
-import Link from 'next/link'
-import { ModuleStatus } from '@/src/types'
 
-export function Dashboard() {
-  // Высота для карточек с графиками
-  const chartHeight = 200
+// Высота для карточек с графиками
+const chartHeight = 200
 
-  // Используем хуки вместо моков
+// Компонент с фильтрами (требует Suspense для useSearchParams)
+function DashboardContent() {
+  const { searchQuery, selectedStatuses, setSearchQuery, toggleStatus, updateUrl } = useFilters()
+
+  // Синхронизируем URL при изменении фильтров (без перезагрузки)
+  useEffect(() => {
+    updateUrl()
+  }, [searchQuery, selectedStatuses, updateUrl])
+
+  // Используем хуки для данных
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useMetrics()
 
-  // Загружаем модули без фильтров для распределения по статусам
+  // Загружаем модули с фильтрами из Zustand store
   const { data: modulesResponse, isLoading: modulesLoading, error: modulesError } = useModules({
-    search: '',
-    statuses: [],
+    search: searchQuery,
+    statuses: selectedStatuses,
     page: 1,
     limit: 100,
   })
 
-  // Состояние для фильтрации на клиенте
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedStatuses, setSelectedStatuses] = useState<ModuleStatus[]>([])
-
   const allModules = modulesResponse?.data || []
-  
-  // Клиентская фильтрация модулей
-  const filteredModules = allModules.filter((module) => {
-    const matchesSearch = searchQuery
-      ? module.name.toLowerCase().includes(searchQuery.toLowerCase())
-      : true
-    const matchesStatus = selectedStatuses.length > 0
-      ? selectedStatuses.includes(module.status)
-      : true
-    return matchesSearch && matchesStatus
-  })
-
   const isLoading = metricsLoading || modulesLoading
 
   if (isLoading) {
@@ -55,7 +47,6 @@ export function Dashboard() {
     )
   }
 
-  // Проверяем что все данные загружены перед рендером
   if (!metrics || !allModules || allModules.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -70,10 +61,6 @@ export function Dashboard() {
         {/* Главная метрика */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-8 text-gray-900">SDD Navigator Dashboard</h1>
-        </div>
-
-        {/* Coverage Trend - полная ширина */}
-        <div className="mb-8">
         </div>
 
         {/* Grid: первая строка - CoverageChart, вторая строка - три равномерных элемента */}
@@ -124,13 +111,7 @@ export function Dashboard() {
                     <input
                       type="checkbox"
                       checked={selectedStatuses.includes(status)}
-                      onChange={() => {
-                        setSelectedStatuses((prev) =>
-                          prev.includes(status)
-                            ? prev.filter((s) => s !== status)
-                            : [...prev, status]
-                        )
-                      }}
+                      onChange={() => toggleStatus(status)}
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 capitalize">{status}</span>
@@ -141,7 +122,7 @@ export function Dashboard() {
             
             {/* Таблица модулей */}
             <ModulesTable
-              modules={filteredModules.slice(0, 10)}
+              modules={allModules.slice(0, 10)}
               isLoading={false}
               onModuleClick={(moduleId) => {
                 window.location.href = `/modules/${moduleId}`
@@ -150,11 +131,24 @@ export function Dashboard() {
             
             {/* Информация о количестве */}
             <div className="p-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
-              Showing {Math.min(10, filteredModules.length)} of {allModules.length} modules
+              Showing {Math.min(10, allModules.length)} of {allModules.length} modules
             </div>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+// Обёртка с Suspense для useSearchParams
+export function Dashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }
