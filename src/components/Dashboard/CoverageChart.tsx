@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   LineChart,
@@ -9,12 +9,12 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts'
+} from 'recharts';
 
 interface CoverageChartProps {
-  trend: number[]
-  isLoading: boolean
-  error?: Error | null
+  trend: number[];
+  isLoading: boolean;
+  error?: Error | null;
 }
 
 export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
@@ -23,7 +23,7 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load chart</p>
       </div>
-    )
+    );
   }
 
   if (isLoading || !trend || trend.length === 0) {
@@ -31,18 +31,18 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
       <div className="p-6 bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
         <div className="h-full bg-gray-200 rounded" />
       </div>
-    )
+    );
   }
 
   // Convert array to objects with dates for Recharts
   const data = trend.map((coverage, index) => {
-    const date = new Date()
-    date.setDate(date.getDate() - (13 - index))
+    const date = new Date();
+    date.setDate(date.getDate() - (13 - index));
     return {
       date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       coverage,
-    }
-  })
+    };
+  });
 
   return (
     <div>
@@ -51,16 +51,22 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
         <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis 
-            domain={[0, 100]} 
+          <YAxis
+            domain={[0, 100]}
             tickMargin={10}
             label={{ value: 'Coverage %', angle: -90, position: 'outside', dx: -20 }}
           />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="coverage" stroke="#3b82f6" name="Coverage %" dot={{ fill: '#3b82f6' }} />
+          <Line
+            type="monotone"
+            dataKey="coverage"
+            stroke="#3b82f6"
+            name="Coverage %"
+            dot={{ fill: '#3b82f6' }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

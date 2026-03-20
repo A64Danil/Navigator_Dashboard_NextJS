@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { Module } from '@/src/types'
-import { STATUS_COLORS } from '@/src/constants'
+import { Module } from '@/src/types';
+import { STATUS_COLORS } from '@/src/constants';
 
 interface ModuleRowProps {
-  module: Module
-  onClick?: () => void
+  module: Module;
+  onClick?: () => void;
 }
 
 export function ModuleRow({ module, onClick }: ModuleRowProps) {
-  const colors = STATUS_COLORS[module.status]
+  const colors = STATUS_COLORS[module.status];
 
   return (
     <div
@@ -22,10 +22,12 @@ export function ModuleRow({ module, onClick }: ModuleRowProps) {
         {module.covered} / {module.total}
       </div>
       <div className="text-center">
-        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
+        <span
+          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}
+        >
           {module.status}
         </span>
       </div>
     </div>
-  )
+  );
 }

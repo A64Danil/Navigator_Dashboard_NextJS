@@ -1,19 +1,19 @@
-import { faker } from '@faker-js/faker'
+import { faker } from '@faker-js/faker';
 import {
   MetricsResponse,
   Module,
   ModuleDetailsResponse,
   Specification,
   ModuleStatus,
-} from '@/src/types'
+} from '@/src/types';
 
 // Function to reset Faker with the same seed
 // IMPORTANT: seed is stateful, so we reset before each main generation
 function resetFaker() {
-  faker.seed(42)
+  faker.seed(42);
 }
 
-resetFaker()
+resetFaker();
 
 // List from specification (plan.md section 6)
 const MODULE_NAMES = [
@@ -29,7 +29,7 @@ const MODULE_NAMES = [
   'Billing & Subscription',
   'Admin Panel & Audit Logs',
   'Help, Support & Documentation',
-]
+];
 
 /**
  * Helper function: determine module status by coverage percentage
@@ -40,10 +40,10 @@ const MODULE_NAMES = [
  * - critical <60%
  */
 function getStatusByPercentage(coverage: number): ModuleStatus {
-  if (coverage >= 95) return 'excellent'
-  if (coverage >= 80) return 'good'
-  if (coverage >= 60) return 'warning'
-  return 'critical'
+  if (coverage >= 95) return 'excellent';
+  if (coverage >= 80) return 'good';
+  if (coverage >= 60) return 'warning';
+  return 'critical';
 }
 
 /**
@@ -61,24 +61,24 @@ function generateSpecification(specId: number): Specification {
     'POST /api/filter',
     'GET /api/metrics',
     'POST /api/subscribe',
-  ]
+  ];
 
   return {
     id: specId,
     name: endpoints[specId % endpoints.length] + ` [spec-${specId}]`,
     covered: faker.datatype.boolean({ probability: 0.75 }), // 75% coverage on average
     lastUpdated: faker.date.recent({ days: 30 }).toISOString(),
-  }
+  };
 }
 
 /**
  * Generate one module with its specifications
  */
 function generateModule(moduleId: number): Module {
-  const name = MODULE_NAMES[moduleId - 1] || `Module ${moduleId}`
-  const specCount = faker.number.int({ min: 15, max: 30 })
-  const coveredCount = faker.number.int({ min: 0, max: specCount })
-  const coverage = Math.round((coveredCount / specCount) * 1000) / 10 // one decimal
+  const name = MODULE_NAMES[moduleId - 1] || `Module ${moduleId}`;
+  const specCount = faker.number.int({ min: 15, max: 30 });
+  const coveredCount = faker.number.int({ min: 0, max: specCount });
+  const coverage = Math.round((coveredCount / specCount) * 1000) / 10; // one decimal
 
   return {
     id: moduleId,
@@ -88,21 +88,21 @@ function generateModule(moduleId: number): Module {
     total: specCount,
     status: getStatusByPercentage(coverage),
     lastUpdated: faker.date.recent({ days: 30 }).toISOString(),
-  }
+  };
 }
 
 /**
  * Cache for modules to guarantee that all functions return the same data
  * Generated once with seed 42
  */
-let modulesCache: Module[] | null = null
+let modulesCache: Module[] | null = null;
 
 function getAllModulesCached(): Module[] {
   if (!modulesCache) {
-    resetFaker()
-    modulesCache = Array.from({ length: MODULE_NAMES.length }, (_, i) => generateModule(i + 1))
+    resetFaker();
+    modulesCache = Array.from({ length: MODULE_NAMES.length }, (_, i) => generateModule(i + 1));
   }
-  return modulesCache
+  return modulesCache;
 }
 
 /**
@@ -110,25 +110,25 @@ function getAllModulesCached(): Module[] {
  */
 export function generateMetrics(): MetricsResponse {
   // Use cached modules to guarantee consistency
-  const modules = getAllModulesCached()
+  const modules = getAllModulesCached();
 
-  const specsTotal = modules.reduce((sum, m) => sum + m.total, 0)
-  const specsCovered = modules.reduce((sum, m) => sum + m.covered, 0)
-  const overallCoverage = Math.round((specsCovered / specsTotal) * 1000) / 10
+  const specsTotal = modules.reduce((sum, m) => sum + m.total, 0);
+  const specsCovered = modules.reduce((sum, m) => sum + m.covered, 0);
+  const overallCoverage = Math.round((specsCovered / specsTotal) * 1000) / 10;
 
   // Generate 14-day trend (volatile growth with occasional dips)
-  resetFaker()
-  const trend: number[] = []
-  let currentCoverage = overallCoverage - 25 // Start 25% lower
+  resetFaker();
+  const trend: number[] = [];
+  let currentCoverage = overallCoverage - 25; // Start 25% lower
   for (let i = 0; i < 14; i++) {
-    trend.push(Math.round(currentCoverage * 10) / 10)
+    trend.push(Math.round(currentCoverage * 10) / 10);
     // Randomly go up or down with overall upward bias
-    const change = faker.number.float({ min: -4.5, max: 7.5 }) // Can drop or rise
-    currentCoverage += change
+    const change = faker.number.float({ min: -4.5, max: 7.5 }); // Can drop or rise
+    currentCoverage += change;
     // Clamp to valid range and ensure overall progress
-    if (currentCoverage > overallCoverage) currentCoverage = overallCoverage
+    if (currentCoverage > overallCoverage) currentCoverage = overallCoverage;
   }
-  trend[13] = overallCoverage // last day = current coverage
+  trend[13] = overallCoverage; // last day = current coverage
 
   return {
     overallCoverage,
@@ -137,7 +137,7 @@ export function generateMetrics(): MetricsResponse {
     specsTotal,
     lastUpdated: new Date().toISOString(),
     trend,
-  }
+  };
 }
 
 /**
@@ -145,7 +145,7 @@ export function generateMetrics(): MetricsResponse {
  * Used for /api/modules and for mock components
  */
 export function generateAllModules(): Module[] {
-  return getAllModulesCached()
+  return getAllModulesCached();
 }
 
 /**
@@ -153,32 +153,32 @@ export function generateAllModules(): Module[] {
  */
 export function generateModuleDetails(moduleId: number): ModuleDetailsResponse {
   // Use cached module to guarantee that data is consistent
-  const allModules = getAllModulesCached()
-  const module = allModules.find((m) => m.id === moduleId)
+  const allModules = getAllModulesCached();
+  const mod = allModules.find((m) => m.id === moduleId);
 
-  if (!module) {
-    throw new Error(`Module with id ${moduleId} not found`)
+  if (!mod) {
+    throw new Error(`Module with id ${moduleId} not found`);
   }
 
-  const specCount = module.total
+  const specCount = mod.total;
   const specifications: Specification[] = Array.from({ length: specCount }, (_, i) => {
-    resetFaker()
-    const spec = generateSpecification(i + 1)
+    resetFaker();
+    const spec = generateSpecification(i + 1);
 
     // Overwrite covered by index to guarantee that
-    // number of covered specs matches module.covered
-    if (i < module.covered) {
-      spec.covered = true
+    // number of covered specs matches mod.covered
+    if (i < mod.covered) {
+      spec.covered = true;
     } else {
-      spec.covered = false
+      spec.covered = false;
     }
-    return spec
-  })
+    return spec;
+  });
 
   return {
-    ...module,
+    ...mod,
     specifications,
-  }
+  };
 }
 
 /**
@@ -190,16 +190,16 @@ export function filterModules(
   search: string,
   statuses: ModuleStatus[]
 ): Module[] {
-  let filtered = modules
+  let filtered = modules;
 
   if (search && search.trim()) {
-    const searchLower = search.toLowerCase()
-    filtered = filtered.filter((m) => m.name.toLowerCase().includes(searchLower))
+    const searchLower = search.toLowerCase();
+    filtered = filtered.filter((m) => m.name.toLowerCase().includes(searchLower));
   }
 
   if (statuses && statuses.length > 0) {
-    filtered = filtered.filter((m) => statuses.includes(m.status))
+    filtered = filtered.filter((m) => statuses.includes(m.status));
   }
 
-  return filtered
+  return filtered;
 }

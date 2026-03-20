@@ -1,20 +1,24 @@
-'use client'
+'use client';
 
-import { Specification } from '@/src/types'
+import { Specification } from '@/src/types';
 
 interface SpecificationsTableProps {
-  specifications: Specification[]
-  isLoading: boolean
-  error?: Error | null
+  specifications: Specification[];
+  isLoading: boolean;
+  error?: Error | null;
 }
 
-export function SpecificationsTable({ specifications, isLoading, error }: SpecificationsTableProps) {
+export function SpecificationsTable({
+  specifications,
+  isLoading,
+  error,
+}: SpecificationsTableProps) {
   if (error) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load specifications</p>
       </div>
-    )
+    );
   }
 
   if (isLoading) {
@@ -26,7 +30,7 @@ export function SpecificationsTable({ specifications, isLoading, error }: Specif
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!specifications || specifications.length === 0) {
@@ -34,7 +38,7 @@ export function SpecificationsTable({ specifications, isLoading, error }: Specif
       <div className="p-6 bg-white border border-gray-200 rounded-lg text-center text-gray-500">
         No specifications found
       </div>
-    )
+    );
   }
 
   return (
@@ -48,7 +52,10 @@ export function SpecificationsTable({ specifications, isLoading, error }: Specif
 
       {/* Rows */}
       {specifications.map((spec) => (
-        <div key={spec.id} className="grid grid-cols-3 gap-4 p-4 border-b border-gray-100 hover:bg-gray-50">
+        <div
+          key={spec.id}
+          className="grid grid-cols-3 gap-4 p-4 border-b border-gray-100 hover:bg-gray-50"
+        >
           <div className="text-gray-900">{spec.name}</div>
           <div className="text-center">
             {spec.covered ? (
@@ -67,5 +74,5 @@ export function SpecificationsTable({ specifications, isLoading, error }: Specif
         </div>
       ))}
     </div>
-  )
+  );
 }

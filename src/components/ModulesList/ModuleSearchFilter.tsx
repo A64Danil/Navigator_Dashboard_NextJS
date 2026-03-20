@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { ModuleStatus } from '@/src/types'
+import { ModuleStatus } from '@/src/types';
 
 interface ModuleSearchFilterProps {
-  searchQuery: string
-  onSearchChange: (query: string) => void
-  selectedStatuses: ModuleStatus[]
-  onStatusToggle: (status: ModuleStatus) => void
-  onReset: () => void
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  selectedStatuses: ModuleStatus[];
+  onStatusToggle: (status: ModuleStatus) => void;
+  onReset: () => void;
 }
 
 const STATUS_OPTIONS: { label: string; value: ModuleStatus }[] = [
@@ -15,7 +15,7 @@ const STATUS_OPTIONS: { label: string; value: ModuleStatus }[] = [
   { label: 'Good', value: 'good' },
   { label: 'Warning', value: 'warning' },
   { label: 'Critical', value: 'critical' },
-]
+];
 
 export function ModuleSearchFilter({
   searchQuery,
@@ -66,5 +66,5 @@ export function ModuleSearchFilter({
         Reset Filters
       </button>
     </div>
-  )
+  );
 }

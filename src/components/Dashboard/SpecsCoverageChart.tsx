@@ -1,22 +1,27 @@
-'use client'
+'use client';
 
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts'
-import { MetricsResponse } from '@/src/types'
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { MetricsResponse } from '@/src/types';
 
 interface SpecsCoverageChartProps {
-  metrics: MetricsResponse | null
-  isLoading: boolean
-  error?: Error | null
-  height?: number
+  metrics: MetricsResponse | null;
+  isLoading: boolean;
+  error?: Error | null;
+  height?: number;
 }
 
-export function SpecsCoverageChart({ metrics, isLoading, error, height = 300 }: SpecsCoverageChartProps) {
+export function SpecsCoverageChart({
+  metrics,
+  isLoading,
+  error,
+  height = 300,
+}: SpecsCoverageChartProps) {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load chart</p>
       </div>
-    )
+    );
   }
 
   if (isLoading || !metrics) {
@@ -24,16 +29,16 @@ export function SpecsCoverageChart({ metrics, isLoading, error, height = 300 }: 
       <div className="bg-white border border-gray-200 rounded-lg h-80 animate-pulse">
         <div className="h-full bg-gray-200 rounded" />
       </div>
-    )
+    );
   }
 
-  const covered = metrics.specsCovered
-  const notCovered = metrics.specsTotal - metrics.specsCovered
+  const covered = metrics.specsCovered;
+  const notCovered = metrics.specsTotal - metrics.specsCovered;
 
   const data = [
     { name: 'Covered', value: covered },
     { name: 'Not Covered', value: notCovered },
-  ]
+  ];
 
   return (
     <div className="">
@@ -49,5 +54,5 @@ export function SpecsCoverageChart({ metrics, isLoading, error, height = 300 }: 
         </PieChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

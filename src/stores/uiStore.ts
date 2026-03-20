@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { UIStore, ModuleStatus } from '@/src/types'
+import { create } from 'zustand';
+import { UIStore, ModuleStatus } from '@/src/types';
 
 export const useUIStore = create<UIStore>((set) => ({
   searchQuery: '',
@@ -19,4 +19,4 @@ export const useUIStore = create<UIStore>((set) => ({
       searchQuery: '',
       selectedStatuses: [],
     }),
-}))
+}));

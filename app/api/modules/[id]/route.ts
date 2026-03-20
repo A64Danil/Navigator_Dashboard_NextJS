@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { generateModuleDetails } from '../../lib/mockDataGenerator'
+import { NextRequest, NextResponse } from 'next/server';
+import { generateModuleDetails } from '../../lib/mockDataGenerator';
 
 /**
  * GET /api/modules/[id]
@@ -12,18 +12,18 @@ import { generateModuleDetails } from '../../lib/mockDataGenerator'
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params
-    const moduleId = parseInt(id)
+    const { id } = await params;
+    const moduleId = parseInt(id);
 
     // Validation
     if (isNaN(moduleId) || moduleId < 1 || moduleId > 12) {
-      return NextResponse.json({ error: 'Module not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Module not found' }, { status: 404 });
     }
 
-    const moduleDetails = generateModuleDetails(moduleId)
-    return NextResponse.json(moduleDetails, { status: 200 })
+    const moduleDetails = generateModuleDetails(moduleId);
+    return NextResponse.json(moduleDetails, { status: 200 });
   } catch (error) {
-    console.error('Error fetching module details:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching module details:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

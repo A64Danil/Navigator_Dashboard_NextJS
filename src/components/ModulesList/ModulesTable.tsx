@@ -1,24 +1,30 @@
-'use client'
+'use client';
 
-import { FixedSizeList as List } from 'react-window'
-import { Module } from '@/src/types'
-import { ModuleRow } from './ModuleRow'
+import { FixedSizeList as List } from 'react-window';
+import { Module } from '@/src/types';
+import { ModuleRow } from './ModuleRow';
 
 interface ModulesTableProps {
-  modules: Module[]
-  isLoading: boolean
-  isFetching?: boolean
-  error?: Error | null
-  onModuleClick?: (moduleId: number) => void
+  modules: Module[];
+  isLoading: boolean;
+  isFetching?: boolean;
+  error?: Error | null;
+  onModuleClick?: (moduleId: number) => void;
 }
 
-export function ModulesTable({ modules, isLoading, isFetching, error, onModuleClick }: ModulesTableProps) {
+export function ModulesTable({
+  modules,
+  isLoading,
+  isFetching,
+  error,
+  onModuleClick,
+}: ModulesTableProps) {
   if (error) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load modules</p>
       </div>
-    )
+    );
   }
 
   if (isLoading) {
@@ -30,7 +36,7 @@ export function ModulesTable({ modules, isLoading, isFetching, error, onModuleCl
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!modules || modules.length === 0) {
@@ -38,7 +44,7 @@ export function ModulesTable({ modules, isLoading, isFetching, error, onModuleCl
       <div className="p-6 bg-white border border-gray-200 rounded-lg text-center text-gray-500">
         No modules found
       </div>
-    )
+    );
   }
 
   // Table header
@@ -49,14 +55,14 @@ export function ModulesTable({ modules, isLoading, isFetching, error, onModuleCl
       <div className="text-right">Specifications</div>
       <div className="text-center">Status</div>
     </div>
-  )
+  );
 
   // Table row
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
     <div style={style}>
       <ModuleRow module={modules[index]} onClick={() => onModuleClick?.(modules[index].id)} />
     </div>
-  )
+  );
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -67,5 +73,5 @@ export function ModulesTable({ modules, isLoading, isFetching, error, onModuleCl
         </List>
       </div>
     </div>
-  )
+  );
 }

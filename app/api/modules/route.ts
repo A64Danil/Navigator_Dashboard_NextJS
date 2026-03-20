@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { generateAllModules, filterModules } from '../lib/mockDataGenerator'
-import { ModuleStatus } from '@/src/types'
+import { NextRequest, NextResponse } from 'next/server';
+import { generateAllModules, filterModules } from '../lib/mockDataGenerator';
+import { ModuleStatus } from '@/src/types';
 
 /**
  * GET /api/modules?search=&status=&page=&limit=
@@ -16,31 +16,31 @@ import { ModuleStatus } from '@/src/types'
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = new URL(request.url);
 
     // Parse parameters
-    const search = searchParams.get('search')?.trim() || ''
-    const statusParam = searchParams.get('status') || ''
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50')))
+    const search = searchParams.get('search')?.trim() || '';
+    const statusParam = searchParams.get('status') || '';
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50')));
 
     // Parse statuses (comma-separated)
     const statuses: ModuleStatus[] = statusParam
       .split(',')
       .map((s) => s.trim())
-      .filter((s) => ['excellent', 'good', 'warning', 'critical'].includes(s)) as ModuleStatus[]
+      .filter((s) => ['excellent', 'good', 'warning', 'critical'].includes(s)) as ModuleStatus[];
 
     // Generate all modules
-    const allModules = generateAllModules()
+    const allModules = generateAllModules();
 
     // Filter
-    const filtered = filterModules(allModules, search, statuses)
+    const filtered = filterModules(allModules, search, statuses);
 
     // Paginate
-    const total = filtered.length
-    const totalPages = Math.ceil(total / limit)
-    const start = (page - 1) * limit
-    const data = filtered.slice(start, start + limit)
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    const data = filtered.slice(start, start + limit);
 
     return NextResponse.json(
       {
@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
         },
       },
       { status: 200 }
-    )
+    );
   } catch (error) {
-    console.error('Error fetching modules:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching modules:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

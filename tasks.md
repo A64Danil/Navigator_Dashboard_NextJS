@@ -13,6 +13,7 @@
 **Точные действия:**
 
 1. Выполнить команду для создания Next.js проекта (без интерактивных вопросов):
+
    ```bash
    npx create-next-app@latest sdd-navigator-dashboard \
      --typescript \
@@ -24,11 +25,13 @@
    ```
 
 2. Установить зависимости (одна команда для автоматизации):
+
    ```bash
    npm install zustand @tanstack/react-query @faker-js/faker recharts react-window && npm install --save-dev vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/user-event @testing-library/dom prettier @types/node
    ```
 
 3. Создать структуру папок:
+
    ```bash
    mkdir -p src/components/Dashboard
    mkdir -p src/components/ModulesList
@@ -43,12 +46,13 @@
    ```
 
 4. Обновить `next.config.js` добавить:
+
    ```javascript
    /** @type {import('next').NextConfig} */
    const nextConfig = {
      reactStrictMode: true,
-   }
-   module.exports = nextConfig
+   };
+   module.exports = nextConfig;
    ```
 
 5. Создать `.prettierrc.json`:
@@ -63,6 +67,7 @@
    ```
 
 **Acceptance Criteria:**
+
 - [ ] `npm run dev` запускается на `http://localhost:3000`
 - [ ] Проект собирается: `npm run build`
 - [ ] Все папки созданы как указано выше
@@ -83,69 +88,70 @@
 
 ```typescript
 // Status enum для модулей
-export type ModuleStatus = 'excellent' | 'good' | 'warning' | 'critical'
+export type ModuleStatus = 'excellent' | 'good' | 'warning' | 'critical';
 
 // Интерфейс для одной спецификации
 export interface Specification {
-  id: number
-  name: string
-  covered: boolean
-  lastUpdated: string // ISO 8601, e.g., "2025-03-19T10:30:00Z"
+  id: number;
+  name: string;
+  covered: boolean;
+  lastUpdated: string; // ISO 8601, e.g., "2025-03-19T10:30:00Z"
 }
 
 // Интерфейс для модуля (используется в списке и деталях)
 export interface Module {
-  id: number
-  name: string
-  coverage: number // процент, e.g., 85.5
-  covered: number // количество покрытых спецификаций
-  total: number // всего спецификаций
-  status: ModuleStatus // вычисляется: >=95 → excellent, 80-94 → good, 60-79 → warning, <60 → critical
-  lastUpdated: string // ISO 8601
+  id: number;
+  name: string;
+  coverage: number; // процент, e.g., 85.5
+  covered: number; // количество покрытых спецификаций
+  total: number; // всего спецификаций
+  status: ModuleStatus; // вычисляется: >=95 → excellent, 80-94 → good, 60-79 → warning, <60 → critical
+  lastUpdated: string; // ISO 8601
 }
 
 // Ответ для GET /api/metrics
 export interface MetricsResponse {
-  overallCoverage: number // процент, e.g., 80.7
-  modulesCount: number
-  specsCovered: number // всего покрытых спецификаций
-  specsTotal: number // всего спецификаций
-  lastUpdated: string // ISO 8601
-  trend: number[] // массив из 14 дней, e.g., [75, 76, 78, 79, 80, 80.5, 80.7]
+  overallCoverage: number; // процент, e.g., 80.7
+  modulesCount: number;
+  specsCovered: number; // всего покрытых спецификаций
+  specsTotal: number; // всего спецификаций
+  lastUpdated: string; // ISO 8601
+  trend: number[]; // массив из 14 дней, e.g., [75, 76, 78, 79, 80, 80.5, 80.7]
 }
 
 // Пагинация для списка модулей
 export interface Pagination {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 // Ответ для GET /api/modules?search=&status=&page=&limit=
 export interface ModulesListResponse {
-  data: Module[]
-  pagination: Pagination
+  data: Module[];
+  pagination: Pagination;
 }
 
 // Ответ для GET /api/modules/[id]
 export interface ModuleDetailsResponse extends Module {
-  specifications: Specification[]
+  specifications: Specification[];
 }
 
 // Zustand store типы
 export interface UIStore {
-  searchQuery: string
-  selectedStatuses: ModuleStatus[]
-  setSearchQuery: (query: string) => void
-  toggleStatus: (status: ModuleStatus) => void
-  resetFilters: () => void
+  searchQuery: string;
+  selectedStatuses: ModuleStatus[];
+  setSearchQuery: (query: string) => void;
+  toggleStatus: (status: ModuleStatus) => void;
+  resetFilters: () => void;
 }
 ```
 
 **Файл:** `src/types/index.ts`
 
 **Acceptance Criteria:**
+
 - [ ] Файл `src/types/index.ts` содержит все интерфейсы как выше
 - [ ] TypeScript компилируется без ошибок: `npx tsc --noEmit`
 - [ ] Все типы экспортируются из одного файла
@@ -165,22 +171,22 @@ export interface UIStore {
 Создать файл `app/api/lib/mockDataGenerator.ts`:
 
 ```typescript
-import { faker } from '@faker-js/faker'
+import { faker } from '@faker-js/faker';
 import {
   MetricsResponse,
   Module,
   ModuleDetailsResponse,
   Specification,
   ModuleStatus,
-} from '@/src/types'
+} from '@/src/types';
 
 // Функция для сброса Faker с одинаковым seed
 // ВАЖНО: seed это stateful, поэтому сбрасываем перед каждой основной генерацией
 function resetFaker() {
-  faker.seed(42)
+  faker.seed(42);
 }
 
-resetFaker()
+resetFaker();
 
 // Список из спецификации (план.md раздел 6)
 const MODULE_NAMES = [
@@ -196,7 +202,7 @@ const MODULE_NAMES = [
   'Billing & Subscription',
   'Admin Panel & Audit Logs',
   'Help, Support & Documentation',
-]
+];
 
 /**
  * Вспомогательная функция: определить статус модуля по % покрытия
@@ -207,10 +213,10 @@ const MODULE_NAMES = [
  * - critical <60%
  */
 function getStatusByPercentage(coverage: number): ModuleStatus {
-  if (coverage >= 95) return 'excellent'
-  if (coverage >= 80) return 'good'
-  if (coverage >= 60) return 'warning'
-  return 'critical'
+  if (coverage >= 95) return 'excellent';
+  if (coverage >= 80) return 'good';
+  if (coverage >= 60) return 'warning';
+  return 'critical';
 }
 
 /**
@@ -228,24 +234,24 @@ function generateSpecification(specId: number): Specification {
     'POST /api/filter',
     'GET /api/metrics',
     'POST /api/subscribe',
-  ]
+  ];
 
   return {
     id: specId,
     name: endpoints[specId % endpoints.length] + ` [spec-${specId}]`,
     covered: faker.datatype.boolean({ probability: 0.75 }), // 75% покрытия в среднем
     lastUpdated: faker.date.recent({ days: 30 }).toISOString(),
-  }
+  };
 }
 
 /**
  * Генерирует один модуль с его спецификациями
  */
 function generateModule(moduleId: number): Module {
-  const name = MODULE_NAMES[moduleId - 1] || `Module ${moduleId}`
-  const specCount = faker.number.int({ min: 15, max: 30 })
-  const coveredCount = faker.number.int({ min: 0, max: specCount })
-  const coverage = Math.round((coveredCount / specCount) * 1000) / 10 // одна дробь
+  const name = MODULE_NAMES[moduleId - 1] || `Module ${moduleId}`;
+  const specCount = faker.number.int({ min: 15, max: 30 });
+  const coveredCount = faker.number.int({ min: 0, max: specCount });
+  const coverage = Math.round((coveredCount / specCount) * 1000) / 10; // одна дробь
 
   return {
     id: moduleId,
@@ -255,21 +261,21 @@ function generateModule(moduleId: number): Module {
     total: specCount,
     status: getStatusByPercentage(coverage),
     lastUpdated: faker.date.recent({ days: 30 }).toISOString(),
-  }
+  };
 }
 
 /**
  * Кэш для модулей чтобы гарантировать что все функции возвращают одинаковые данные
  * Генерируется один раз с seed 42
  */
-let modulesCache: Module[] | null = null
+let modulesCache: Module[] | null = null;
 
 function getAllModulesCached(): Module[] {
   if (!modulesCache) {
-    resetFaker()
-    modulesCache = Array.from({ length: MODULE_NAMES.length }, (_, i) => generateModule(i + 1))
+    resetFaker();
+    modulesCache = Array.from({ length: MODULE_NAMES.length }, (_, i) => generateModule(i + 1));
   }
-  return modulesCache
+  return modulesCache;
 }
 
 /**
@@ -277,21 +283,21 @@ function getAllModulesCached(): Module[] {
  */
 export function generateMetrics(): MetricsResponse {
   // Используем кэшированные модули чтобы гарантировать consistency
-  const modules = getAllModulesCached()
+  const modules = getAllModulesCached();
 
-  const specsTotal = modules.reduce((sum, m) => sum + m.total, 0)
-  const specsCovered = modules.reduce((sum, m) => sum + m.covered, 0)
-  const overallCoverage = Math.round((specsCovered / specsTotal) * 1000) / 10
+  const specsTotal = modules.reduce((sum, m) => sum + m.total, 0);
+  const specsCovered = modules.reduce((sum, m) => sum + m.covered, 0);
+  const overallCoverage = Math.round((specsCovered / specsTotal) * 1000) / 10;
 
   // Генерируем тренд за 14 дней (постепенный рост)
-  resetFaker()
-  const trend: number[] = []
-  let currentCoverage = overallCoverage - 5
+  resetFaker();
+  const trend: number[] = [];
+  let currentCoverage = overallCoverage - 5;
   for (let i = 0; i < 14; i++) {
-    trend.push(Math.round(currentCoverage * 10) / 10)
-    currentCoverage += faker.number.float({ min: 0.3, max: 0.7 })
+    trend.push(Math.round(currentCoverage * 10) / 10);
+    currentCoverage += faker.number.float({ min: 0.3, max: 0.7 });
   }
-  trend[13] = overallCoverage // последний день = текущее покрытие
+  trend[13] = overallCoverage; // последний день = текущее покрытие
 
   return {
     overallCoverage,
@@ -300,7 +306,7 @@ export function generateMetrics(): MetricsResponse {
     specsTotal,
     lastUpdated: new Date().toISOString(),
     trend,
-  }
+  };
 }
 
 /**
@@ -308,7 +314,7 @@ export function generateMetrics(): MetricsResponse {
  * Используется для /api/modules и для моковых компонентов
  */
 export function generateAllModules(): Module[] {
-  return getAllModulesCached()
+  return getAllModulesCached();
 }
 
 /**
@@ -316,32 +322,32 @@ export function generateAllModules(): Module[] {
  */
 export function generateModuleDetails(moduleId: number): ModuleDetailsResponse {
   // Используем кэшированный модуль чтобы гарантировать что data consistent
-  const allModules = getAllModulesCached()
-  const module = allModules.find(m => m.id === moduleId)
-  
+  const allModules = getAllModulesCached();
+  const module = allModules.find((m) => m.id === moduleId);
+
   if (!module) {
-    throw new Error(`Module with id ${moduleId} not found`)
+    throw new Error(`Module with id ${moduleId} not found`);
   }
 
-  const specCount = module.total
+  const specCount = module.total;
   const specifications: Specification[] = Array.from({ length: specCount }, (_, i) => {
-    resetFaker()
-    const spec = generateSpecification(i + 1)
-    
+    resetFaker();
+    const spec = generateSpecification(i + 1);
+
     // Переписываем covered по индексу чтобы гарантировать что
     // количество покрытых спец совпадает с module.covered
     if (i < module.covered) {
-      spec.covered = true
+      spec.covered = true;
     } else {
-      spec.covered = false
+      spec.covered = false;
     }
-    return spec
-  })
+    return spec;
+  });
 
   return {
     ...module,
     specifications,
-  }
+  };
 }
 
 /**
@@ -353,24 +359,25 @@ export function filterModules(
   search: string,
   statuses: ModuleStatus[]
 ): Module[] {
-  let filtered = modules
+  let filtered = modules;
 
   if (search && search.trim()) {
-    const searchLower = search.toLowerCase()
-    filtered = filtered.filter(m => m.name.toLowerCase().includes(searchLower))
+    const searchLower = search.toLowerCase();
+    filtered = filtered.filter((m) => m.name.toLowerCase().includes(searchLower));
   }
 
   if (statuses && statuses.length > 0) {
-    filtered = filtered.filter(m => statuses.includes(m.status))
+    filtered = filtered.filter((m) => statuses.includes(m.status));
   }
 
-  return filtered
+  return filtered;
 }
 ```
 
 **Файл:** `app/api/lib/mockDataGenerator.ts`
 
 **Важные связи:**
+
 - Импортирует типы из `src/types/index.ts`
 - Использует фиксированный seed (42) для воспроизводимости
 - Функции `generateMetrics()` и `generateAllModules()` будут использоваться:
@@ -378,6 +385,7 @@ export function filterModules(
   - В API routes (T3-T5) как данные для возврата
 
 **Acceptance Criteria:**
+
 - [ ] Файл `app/api/lib/mockDataGenerator.ts` содержит все функции
 - [ ] `npm run dev` работает без ошибок
 - [ ] Все типы импортируются из `src/types/index.ts`
@@ -400,8 +408,8 @@ export function filterModules(
 Создать файл `app/api/metrics/route.ts`:
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { generateMetrics } from '../lib/mockDataGenerator'
+import { NextRequest, NextResponse } from 'next/server';
+import { generateMetrics } from '../lib/mockDataGenerator';
 
 /**
  * GET /api/metrics
@@ -412,11 +420,11 @@ import { generateMetrics } from '../lib/mockDataGenerator'
  */
 export async function GET(request: NextRequest) {
   try {
-    const metrics = generateMetrics()
-    return NextResponse.json(metrics, { status: 200 })
+    const metrics = generateMetrics();
+    return NextResponse.json(metrics, { status: 200 });
   } catch (error) {
-    console.error('Error generating metrics:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error generating metrics:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -424,11 +432,13 @@ export async function GET(request: NextRequest) {
 **Файл:** `app/api/metrics/route.ts`
 
 **Важные связи:**
+
 - Импортирует `generateMetrics` из `app/api/lib/mockDataGenerator.ts`
 - Возвращает `MetricsResponse` (тип из `src/types/index.ts`)
 - Используется компонентом Dashboard (T13) через hook (T7)
 
 **Acceptance Criteria:**
+
 - [ ] Файл `app/api/metrics/route.ts` создан
 - [ ] `curl http://localhost:3000/api/metrics` возвращает 200 с valid JSON
 - [ ] JSON соответствует структуре `MetricsResponse` из типов
@@ -449,9 +459,9 @@ export async function GET(request: NextRequest) {
 Создать файл `app/api/modules/route.ts`:
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { generateAllModules, filterModules } from '../lib/mockDataGenerator'
-import { ModuleStatus } from '@/src/types'
+import { NextRequest, NextResponse } from 'next/server';
+import { generateAllModules, filterModules } from '../lib/mockDataGenerator';
+import { ModuleStatus } from '@/src/types';
 
 /**
  * GET /api/modules?search=&status=&page=&limit=
@@ -467,31 +477,31 @@ import { ModuleStatus } from '@/src/types'
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = new URL(request.url);
 
     // Парсим параметры
-    const search = searchParams.get('search')?.trim() || ''
-    const statusParam = searchParams.get('status') || ''
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50')))
+    const search = searchParams.get('search')?.trim() || '';
+    const statusParam = searchParams.get('status') || '';
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '50')));
 
     // Парсим статусы (comma-separated)
     const statuses: ModuleStatus[] = statusParam
       .split(',')
-      .map(s => s.trim())
-      .filter(s => ['excellent', 'good', 'warning', 'critical'].includes(s)) as ModuleStatus[]
+      .map((s) => s.trim())
+      .filter((s) => ['excellent', 'good', 'warning', 'critical'].includes(s)) as ModuleStatus[];
 
     // Генерируем все модули
-    const allModules = generateAllModules()
+    const allModules = generateAllModules();
 
     // Фильтруем
-    const filtered = filterModules(allModules, search, statuses)
+    const filtered = filterModules(allModules, search, statuses);
 
     // Пагинируем
-    const total = filtered.length
-    const totalPages = Math.ceil(total / limit)
-    const start = (page - 1) * limit
-    const data = filtered.slice(start, start + limit)
+    const total = filtered.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    const data = filtered.slice(start, start + limit);
 
     return NextResponse.json(
       {
@@ -504,10 +514,10 @@ export async function GET(request: NextRequest) {
         },
       },
       { status: 200 }
-    )
+    );
   } catch (error) {
-    console.error('Error fetching modules:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching modules:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -515,11 +525,13 @@ export async function GET(request: NextRequest) {
 **Файл:** `app/api/modules/route.ts`
 
 **Важные связи:**
+
 - Импортирует `generateAllModules`, `filterModules` из `app/api/lib/mockDataGenerator.ts`
 - Возвращает `ModulesListResponse` (тип из `src/types/index.ts`)
 - Используется компонентом ModulesList (T16) через hook (T7)
 
 **Acceptance Criteria:**
+
 - [ ] Файл `app/api/modules/route.ts` создан
 - [ ] Тестовые запросы:
   - `curl "http://localhost:3000/api/modules"` → 200, all modules
@@ -544,8 +556,8 @@ export async function GET(request: NextRequest) {
 Создать файл `app/api/modules/[id]/route.ts`:
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { generateModuleDetails } from '../../lib/mockDataGenerator'
+import { NextRequest, NextResponse } from 'next/server';
+import { generateModuleDetails } from '../../lib/mockDataGenerator';
 
 /**
  * GET /api/modules/[id]
@@ -558,18 +570,18 @@ import { generateModuleDetails } from '../../lib/mockDataGenerator'
  */
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const moduleId = parseInt(params.id)
+    const moduleId = parseInt(params.id);
 
     // Валидация
     if (isNaN(moduleId) || moduleId < 1 || moduleId > 12) {
-      return NextResponse.json({ error: 'Module not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Module not found' }, { status: 404 });
     }
 
-    const moduleDetails = generateModuleDetails(moduleId)
-    return NextResponse.json(moduleDetails, { status: 200 })
+    const moduleDetails = generateModuleDetails(moduleId);
+    return NextResponse.json(moduleDetails, { status: 200 });
   } catch (error) {
-    console.error('Error fetching module details:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching module details:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -577,11 +589,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 **Файл:** `app/api/modules/[id]/route.ts`
 
 **Важные связи:**
+
 - Импортирует `generateModuleDetails` из `app/api/lib/mockDataGenerator.ts`
 - Возвращает `ModuleDetailsResponse` (тип из `src/types/index.ts`)
 - Используется компонентом ModuleDetails (T18) через hook (T7)
 
 **Acceptance Criteria:**
+
 - [ ] Файл `app/api/modules/[id]/route.ts` создан
 - [ ] Тестовые запросы:
   - `curl "http://localhost:3000/api/modules/1"` → 200, module details
@@ -687,12 +701,14 @@ export function ErrorMessage({ message }: { message?: string }) {
 ```
 
 **Файлы:**
+
 - `app/layout.tsx` (обновить)
 - `src/providers/QueryProvider.tsx` (новый)
 - `src/components/common/LoadingSpinner.tsx` (новый)
 - `src/components/common/ErrorBoundary.tsx` (новый)
 
 **Acceptance Criteria:**
+
 - [ ] `npm run dev` работает без ошибок
 - [ ] TanStack Query Provider обёрнут вокруг приложения
 - [ ] LoadingSpinner и ErrorMessage компоненты работают
@@ -778,11 +794,13 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
 **Файл:** `src/components/Dashboard/MetricsCard.tsx`
 
 **Важные связи:**
+
 - Импортирует `MetricsResponse` из `src/types/index.ts`
 - Принимает `metrics`, `isLoading`, `error` как props
 - Используется в Dashboard (T13) с моковыми данными на этом этапе
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает % покрытия, количество модулей, спецификаций
 - [ ] Состояние loading показывает skeleton
 - [ ] Состояние error показывает сообщение об ошибке
@@ -867,11 +885,13 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
 **Файл:** `src/components/Dashboard/CoverageChart.tsx`
 
 **Важные связи:**
+
 - Импортирует компоненты из `recharts`
 - Принимает `trend` (массив чисел), `isLoading`, `error` как props
 - Используется в Dashboard (T13) с моковыми данными
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает LineChart с 14 точками
 - [ ] X-ось показывает даты, Y-ось показывает %
 - [ ] Интерактивен (hover показывает значение)
@@ -953,11 +973,13 @@ export function StatusDistributionChart({ modules, isLoading, error }: StatusDis
 **Файл:** `src/components/Dashboard/StatusDistributionChart.tsx`
 
 **Важные связи:**
+
 - Импортирует `Module` из `src/types/index.ts`
 - Принимает массив модулей и сам считает распределение по статусам
 - Используется в Dashboard (T13) с моковыми данными
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает BarChart с 4 столбцами (excellent, good, warning, critical)
 - [ ] Цвета: зелёный (excellent), жёлто-зелёный (good), жёлтый (warning), красный (critical)
 - [ ] Интерактивен и адаптивен
@@ -1034,11 +1056,13 @@ export function SpecsCoverageChart({ metrics, isLoading, error }: SpecsCoverageC
 **Файл:** `src/components/Dashboard/SpecsCoverageChart.tsx`
 
 **Важные связи:**
+
 - Импортирует `MetricsResponse` из `src/types/index.ts`
 - Принимает `metrics` и сам считает соотношение covered/not covered
 - Используется в Dashboard (T13) с моковыми данными
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает PieChart с двумя сегментами (Covered, Not Covered)
 - [ ] Цвета: зелёный (covered), серый (not covered)
 - [ ] Интерактивен и адаптивен
@@ -1117,16 +1141,19 @@ export default function Home() {
 ```
 
 **Файлы:**
+
 - `src/components/Dashboard/Dashboard.tsx` (новый)
 - `app/page.tsx` (обновить)
 
 **Важные связи:**
+
 - Импортирует `generateMetrics`, `generateAllModules` из `app/api/lib/mockDataGenerator.ts`
 - Импортирует компоненты MetricsCard, CoverageChart, StatusDistributionChart, SpecsCoverageChart
 - На этом этапе использует моковые данные напрямую
 - При T7 (интеграция) эти функции будут заменены на hooks
 
 **Acceptance Criteria:**
+
 - [ ] `npm run dev` открывает `http://localhost:3000` с дашбордом
 - [ ] Видны все три графика и метрика
 - [ ] Кнопка "View All Modules" работает (ссылается на `/modules`)
@@ -1223,6 +1250,7 @@ export function ModuleSearchFilter({
 **Файл:** `src/components/ModulesList/ModuleSearchFilter.tsx`
 
 **Важные связи:**
+
 - Импортирует `ModuleStatus` из `src/types/index.ts`
 - Принимает props для управления поиском и фильтрами
 - Вызывает callback'и при изменении
@@ -1230,6 +1258,7 @@ export function ModuleSearchFilter({
 - При T7 будет интегрирован с Zustand store
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает поле поиска
 - [ ] Компонент отображает 4 checkbox'а для статусов
 - [ ] Компонент отображает кнопку "Reset Filters"
@@ -1366,16 +1395,19 @@ export function ModuleRow({ module, onClick }: ModuleRowProps) {
 ```
 
 **Файлы:**
+
 - `src/components/ModulesList/ModulesTable.tsx` (новый)
 - `src/components/ModulesList/ModuleRow.tsx` (новый)
 
 **Важные связи:**
+
 - Импортирует `Module` из `src/types/index.ts`
 - Использует `FixedSizeList` из react-window для виртуализации
 - Принимает callback `onModuleClick` для навигации
 - Используется в ModulesList (T16)
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает таблицу с модулями
 - [ ] Используется react-window для виртуализации
 - [ ] При скролле — только видимые строки в DOM
@@ -1474,10 +1506,12 @@ export default function ModulesPage() {
 ```
 
 **Файлы:**
+
 - `src/components/ModulesList/ModulesList.tsx` (новый)
 - `app/modules/page.tsx` (новый)
 
 **Важные связи:**
+
 - Импортирует `generateAllModules`, `filterModules` из `app/api/lib/mockDataGenerator.ts`
 - Импортирует `ModuleSearchFilter` и `ModulesTable`
 - На этапе моков использует локальное состояние (`useState`)
@@ -1485,6 +1519,7 @@ export default function ModulesPage() {
 - Клик на модуль навигирует на `/modules/[id]`
 
 **Acceptance Criteria:**
+
 - [ ] `http://localhost:3000/modules` отображает список модулей
 - [ ] Фильтр и поиск работают и обновляют таблицу в реальном времени
 - [ ] Таблица использует виртуализацию
@@ -1508,19 +1543,19 @@ export default function ModulesPage() {
 Создать файл `src/stores/uiStore.ts`:
 
 ```typescript
-import { create } from 'zustand'
-import { UIStore, ModuleStatus } from '@/src/types'
+import { create } from 'zustand';
+import { UIStore, ModuleStatus } from '@/src/types';
 
-export const useUIStore = create<UIStore>(set => ({
+export const useUIStore = create<UIStore>((set) => ({
   searchQuery: '',
   selectedStatuses: [],
 
   setSearchQuery: (query: string) => set({ searchQuery: query }),
 
   toggleStatus: (status: ModuleStatus) =>
-    set(state => ({
+    set((state) => ({
       selectedStatuses: state.selectedStatuses.includes(status)
-        ? state.selectedStatuses.filter(s => s !== status)
+        ? state.selectedStatuses.filter((s) => s !== status)
         : [...state.selectedStatuses, status],
     })),
 
@@ -1529,17 +1564,19 @@ export const useUIStore = create<UIStore>(set => ({
       searchQuery: '',
       selectedStatuses: [],
     }),
-}))
+}));
 ```
 
 **Файл:** `src/stores/uiStore.ts`
 
 **Важные связи:**
+
 - Импортирует `UIStore`, `ModuleStatus` из `src/types/index.ts`
 - Будет использоваться в ModulesList (T16 обновить) при интеграции
 - При T7 ModulesList будет получать состояние из этого store'а
 
 **Acceptance Criteria:**
+
 - [ ] Файл `src/stores/uiStore.ts` создан
 - [ ] `useUIStore()` экспортируется и работает как React hook
 - [ ] Все методы (setSearchQuery, toggleStatus, resetFilters) работают
@@ -1560,92 +1597,95 @@ export const useUIStore = create<UIStore>(set => ({
 1. Создать файл `src/hooks/useMetrics.ts`:
 
 ```typescript
-import { useQuery } from '@tanstack/react-query'
-import { MetricsResponse } from '@/src/types'
+import { useQuery } from '@tanstack/react-query';
+import { MetricsResponse } from '@/src/types';
 
 export function useMetrics() {
   return useQuery<MetricsResponse>({
     queryKey: ['metrics'],
     queryFn: async () => {
-      const response = await fetch('/api/metrics')
-      if (!response.ok) throw new Error('Failed to fetch metrics')
-      return response.json()
+      const response = await fetch('/api/metrics');
+      if (!response.ok) throw new Error('Failed to fetch metrics');
+      return response.json();
     },
     staleTime: 1000 * 60 * 5, // 5 минут
-  })
+  });
 }
 ```
 
 2. Создать файл `src/hooks/useModules.ts`:
 
 ```typescript
-import { useQuery } from '@tanstack/react-query'
-import { ModulesListResponse, ModuleStatus } from '@/src/types'
+import { useQuery } from '@tanstack/react-query';
+import { ModulesListResponse, ModuleStatus } from '@/src/types';
 
 interface UseModulesProps {
-  search: string
-  statuses: ModuleStatus[]
-  page: number
-  limit: number
+  search: string;
+  statuses: ModuleStatus[];
+  page: number;
+  limit: number;
 }
 
 export function useModules({ search, statuses, page, limit }: UseModulesProps) {
   // Строим stable string для statuses чтобы избежать проблем с query key
-  const statusesKey = statuses.length > 0 ? statuses.sort().join(',') : 'all'
+  const statusesKey = statuses.length > 0 ? statuses.sort().join(',') : 'all';
 
   return useQuery<ModulesListResponse>({
     queryKey: ['modules', search || '', statusesKey, page, limit],
     queryFn: async () => {
-      const params = new URLSearchParams()
-      if (search && search.trim()) params.append('search', search.trim())
-      if (statuses.length > 0) params.append('status', statuses.join(','))
-      params.append('page', page.toString())
-      params.append('limit', limit.toString())
+      const params = new URLSearchParams();
+      if (search && search.trim()) params.append('search', search.trim());
+      if (statuses.length > 0) params.append('status', statuses.join(','));
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
 
-      const response = await fetch(`/api/modules?${params}`)
-      if (!response.ok) throw new Error('Failed to fetch modules')
-      return response.json()
+      const response = await fetch(`/api/modules?${params}`);
+      if (!response.ok) throw new Error('Failed to fetch modules');
+      return response.json();
     },
     staleTime: 1000 * 60 * 5,
-  })
+  });
 }
 ```
 
 3. Создать файл `src/hooks/useModuleDetails.ts`:
 
 ```typescript
-import { useQuery } from '@tanstack/react-query'
-import { ModuleDetailsResponse } from '@/src/types'
+import { useQuery } from '@tanstack/react-query';
+import { ModuleDetailsResponse } from '@/src/types';
 
 export function useModuleDetails(moduleId: number) {
   return useQuery<ModuleDetailsResponse>({
     queryKey: ['moduleDetails', moduleId],
     queryFn: async () => {
-      const response = await fetch(`/api/modules/${moduleId}`)
+      const response = await fetch(`/api/modules/${moduleId}`);
       if (!response.ok) {
-        if (response.status === 404) throw new Error('Module not found')
-        throw new Error('Failed to fetch module details')
+        if (response.status === 404) throw new Error('Module not found');
+        throw new Error('Failed to fetch module details');
       }
-      return response.json()
+      return response.json();
     },
     staleTime: 1000 * 60 * 5,
     enabled: !!moduleId,
-  })
+  });
 }
 ```
 
 **Файлы:**
+
 - `src/hooks/useMetrics.ts` (новый)
 - `src/hooks/useModules.ts` (новый)
 - `src/hooks/useModuleDetails.ts` (новый)
 
 **Важные связи:**
+
 - Импортируют типы из `src/types/index.ts`
 - Делают запросы на API routes (T3-T5)
 - Query ключи построены правильно для кэширования
 - Будут использоваться в компонентах при обновлении (T13, T16, T18)
 
 **Acceptance Criteria:**
+
 - [ ] Все три hook'а созданы
 - [ ] Каждый hook возвращает `{ data, isLoading, error }`
 - [ ] Query ключи построены правильно для кэширования
@@ -1750,12 +1790,14 @@ export function Dashboard() {
 **Файл:** `src/components/Dashboard/Dashboard.tsx` (обновить)
 
 **Важные изменения:**
+
 - Заменены `generateMetrics()` и `generateAllModules()` на `useMetrics()` и `useModules()` hooks
 - Добавлена обработка loading и error состояний
 - Данные теперь загружаются с реального API (T3-T5)
 - TanStack Query автоматически кэширует результаты
 
 **Acceptance Criteria:**
+
 - [ ] Dashboard использует hooks вместо моков
 - [ ] Данные загружаются с API (можно проверить в Network tab браузера)
 - [ ] Loading и error состояния работают
@@ -1852,12 +1894,14 @@ export function ModulesList() {
 **Файл:** `src/components/ModulesList/ModulesList.tsx` (обновить)
 
 **Важные изменения:**
+
 - Используется `useUIStore()` для получения и управления фильтрами
 - Используется `useModules()` hook для загрузки данных с API
 - При изменении поиска или фильтров в store → автоматически переинициируется запрос
 - TanStack Query кэширует результаты по ключам с фильтрами
 
 **Acceptance Criteria:**
+
 - [ ] ModulesList использует Zustand store для фильтров
 - [ ] ModulesList использует useModules hook для загрузки
 - [ ] При изменении фильтров → новый запрос к API
@@ -1961,10 +2005,12 @@ export function SpecificationsTable({
 **Файл:** `src/components/ModuleDetails/SpecificationsTable.tsx`
 
 **Важные связи:**
+
 - Импортирует `Specification` из `src/types/index.ts`
 - Используется в ModuleDetails (T18)
 
 **Acceptance Criteria:**
+
 - [ ] Компонент отображает таблицу спецификаций
 - [ ] Статус shown как badge (Covered = зелёный, Not Covered = красный)
 - [ ] Дата форматируется понятно
@@ -2084,12 +2130,14 @@ export function ModuleDetails({ moduleId }: ModuleDetailsProps) {
 **Файл:** `src/components/ModuleDetails/ModuleDetails.tsx`
 
 **Важные связи:**
+
 - Импортирует `useModuleDetails` hook (T7)
 - Использует `SpecificationsTable` компонент (T17)
 - Загружает данные с `/api/modules/[id]` (T5)
 - Импортирует типы из `src/types/index.ts`
 
 **Acceptance Criteria:**
+
 - [ ] Компонент загружает и отображает детали модуля
 - [ ] Показывает метрики (coverage, covered, total)
 - [ ] Отображает статус с правильными цветами
@@ -2133,6 +2181,7 @@ export default function ModulePage({ params }: ModulePageProps) {
 **Файл:** `app/modules/[id]/page.tsx`
 
 **Acceptance Criteria:**
+
 - [ ] Маршрут `/modules/1`, `/modules/2` и т.д. работает
 - [ ] Загружает и отображает детали модуля
 - [ ] При несуществующем ID показывает ошибку
@@ -2150,17 +2199,20 @@ export default function ModulePage({ params }: ModulePageProps) {
 **Точные действия:**
 
 Проверить (не создавать, это уже сделано):
+
 - В `Dashboard.tsx` кнопка "View All Modules" навигирует на `/modules` ✅ (T13)
 - В `ModulesList.tsx` клик на модуль навигирует на `/modules/[id]` ✅ (T16)
 - В `ModuleDetails.tsx` кнопка "Back to modules" навигирует на `/modules` ✅ (T18)
 
 Тесты:
+
 1. Открыть `http://localhost:3000/`
 2. Кликнуть "View All Modules" → должно перейти на `/modules`
 3. Кликнуть на любой модуль → должно перейти на `/modules/[id]`
 4. Кликнуть "Back to modules" → должно вернуться на `/modules`
 
 **Acceptance Criteria:**
+
 - [ ] Навигация между страницами работает
 - [ ] URL корректны
 - [ ] Back button браузера работает
@@ -2182,106 +2234,106 @@ export default function ModulePage({ params }: ModulePageProps) {
 1. Создать `src/stores/__tests__/uiStore.test.ts`:
 
 ```typescript
-import { renderHook, act } from '@testing-library/react'
-import { useUIStore } from '../uiStore'
+import { renderHook, act } from '@testing-library/react';
+import { useUIStore } from '../uiStore';
 
 describe('uiStore', () => {
   beforeEach(() => {
-    useUIStore.setState({ searchQuery: '', selectedStatuses: [] })
-  })
+    useUIStore.setState({ searchQuery: '', selectedStatuses: [] });
+  });
 
   it('should set search query', () => {
-    const { result } = renderHook(() => useUIStore())
-    act(() => result.current.setSearchQuery('auth'))
-    expect(result.current.searchQuery).toBe('auth')
-  })
+    const { result } = renderHook(() => useUIStore());
+    act(() => result.current.setSearchQuery('auth'));
+    expect(result.current.searchQuery).toBe('auth');
+  });
 
   it('should toggle status', () => {
-    const { result } = renderHook(() => useUIStore())
-    act(() => result.current.toggleStatus('excellent'))
-    expect(result.current.selectedStatuses).toContain('excellent')
-    act(() => result.current.toggleStatus('excellent'))
-    expect(result.current.selectedStatuses).not.toContain('excellent')
-  })
+    const { result } = renderHook(() => useUIStore());
+    act(() => result.current.toggleStatus('excellent'));
+    expect(result.current.selectedStatuses).toContain('excellent');
+    act(() => result.current.toggleStatus('excellent'));
+    expect(result.current.selectedStatuses).not.toContain('excellent');
+  });
 
   it('should reset filters', () => {
-    const { result } = renderHook(() => useUIStore())
+    const { result } = renderHook(() => useUIStore());
     act(() => {
-      result.current.setSearchQuery('test')
-      result.current.toggleStatus('excellent')
-    })
-    act(() => result.current.resetFilters())
-    expect(result.current.searchQuery).toBe('')
-    expect(result.current.selectedStatuses).toEqual([])
-  })
-})
+      result.current.setSearchQuery('test');
+      result.current.toggleStatus('excellent');
+    });
+    act(() => result.current.resetFilters());
+    expect(result.current.searchQuery).toBe('');
+    expect(result.current.selectedStatuses).toEqual([]);
+  });
+});
 ```
 
 2. Создать `app/api/lib/__tests__/mockDataGenerator.test.ts`:
 
 ```typescript
-import { generateMetrics, generateAllModules, generateModuleDetails } from '../mockDataGenerator'
+import { generateMetrics, generateAllModules, generateModuleDetails } from '../mockDataGenerator';
 
 describe('mockDataGenerator', () => {
   it('should generate metrics with correct structure', () => {
-    const metrics = generateMetrics()
-    expect(metrics).toHaveProperty('overallCoverage')
-    expect(metrics).toHaveProperty('modulesCount')
-    expect(metrics).toHaveProperty('specsCovered')
-    expect(metrics).toHaveProperty('specsTotal')
-    expect(metrics).toHaveProperty('trend')
-    expect(metrics.trend).toHaveLength(14)
-    expect(metrics.overallCoverage).toBeGreaterThanOrEqual(0)
-    expect(metrics.overallCoverage).toBeLessThanOrEqual(100)
-  })
+    const metrics = generateMetrics();
+    expect(metrics).toHaveProperty('overallCoverage');
+    expect(metrics).toHaveProperty('modulesCount');
+    expect(metrics).toHaveProperty('specsCovered');
+    expect(metrics).toHaveProperty('specsTotal');
+    expect(metrics).toHaveProperty('trend');
+    expect(metrics.trend).toHaveLength(14);
+    expect(metrics.overallCoverage).toBeGreaterThanOrEqual(0);
+    expect(metrics.overallCoverage).toBeLessThanOrEqual(100);
+  });
 
   it('should generate modules with correct status based on coverage', () => {
-    const modules = generateAllModules()
-    modules.forEach(module => {
-      if (module.coverage >= 95) expect(module.status).toBe('excellent')
-      if (module.coverage >= 80 && module.coverage < 95) expect(module.status).toBe('good')
-      if (module.coverage >= 60 && module.coverage < 80) expect(module.status).toBe('warning')
-      if (module.coverage < 60) expect(module.status).toBe('critical')
-    })
-  })
+    const modules = generateAllModules();
+    modules.forEach((module) => {
+      if (module.coverage >= 95) expect(module.status).toBe('excellent');
+      if (module.coverage >= 80 && module.coverage < 95) expect(module.status).toBe('good');
+      if (module.coverage >= 60 && module.coverage < 80) expect(module.status).toBe('warning');
+      if (module.coverage < 60) expect(module.status).toBe('critical');
+    });
+  });
 
   it('should generate module details with specifications', () => {
-    const moduleDetails = generateModuleDetails(1)
-    expect(moduleDetails).toHaveProperty('specifications')
-    expect(Array.isArray(moduleDetails.specifications)).toBe(true)
-    expect(moduleDetails.specifications.length).toBe(moduleDetails.total)
-  })
+    const moduleDetails = generateModuleDetails(1);
+    expect(moduleDetails).toHaveProperty('specifications');
+    expect(Array.isArray(moduleDetails.specifications)).toBe(true);
+    expect(moduleDetails.specifications.length).toBe(moduleDetails.total);
+  });
 
   it('should have reproducible data with seed', () => {
     // Модули должны быть одинаковыми при одном и том же seed
     // потому что используется кэш
-    const metrics1 = generateMetrics()
-    const metrics2 = generateMetrics()
-    expect(metrics1.overallCoverage).toBe(metrics2.overallCoverage)
-    expect(metrics1.modulesCount).toBe(metrics2.modulesCount)
-  })
+    const metrics1 = generateMetrics();
+    const metrics2 = generateMetrics();
+    expect(metrics1.overallCoverage).toBe(metrics2.overallCoverage);
+    expect(metrics1.modulesCount).toBe(metrics2.modulesCount);
+  });
 
   it('should generate consistent data across calls', () => {
-    const modules = generateAllModules()
-    const metrics = generateMetrics()
-    
+    const modules = generateAllModules();
+    const metrics = generateMetrics();
+
     // Общее количество спецификаций должно совпадать
-    const totalFromModules = modules.reduce((sum, m) => sum + m.total, 0)
-    expect(totalFromModules).toBe(metrics.specsTotal)
-    
+    const totalFromModules = modules.reduce((sum, m) => sum + m.total, 0);
+    expect(totalFromModules).toBe(metrics.specsTotal);
+
     // Общее количество покрытых должно совпадать
-    const coveredFromModules = modules.reduce((sum, m) => sum + m.covered, 0)
-    expect(coveredFromModules).toBe(metrics.specsCovered)
-  })
-})
+    const coveredFromModules = modules.reduce((sum, m) => sum + m.covered, 0);
+    expect(coveredFromModules).toBe(metrics.specsCovered);
+  });
+});
 ```
 
 3. Обновить `vitest.config.ts` (создать если не существует):
 
 ```typescript
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -2295,10 +2347,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});
 ```
 
 **ВАЖНО:** Alias в vitest должен совпадать с alias в tsconfig.json! Проверьте что в `tsconfig.json` есть:
+
 ```json
 {
   "compilerOptions": {
@@ -2322,12 +2375,14 @@ export default defineConfig({
 ```
 
 **Файлы:**
+
 - `src/stores/__tests__/uiStore.test.ts` (новый)
 - `app/api/lib/__tests__/mockDataGenerator.test.ts` (новый)
 - `vitest.config.ts` (новый)
 - `package.json` (обновить scripts)
 
 **Acceptance Criteria:**
+
 - [ ] `npm run test` проходит все тесты
 - [ ] Минимум 70% покрытие критических функций
 - [ ] Тесты проверяют основной функционал
@@ -2410,6 +2465,7 @@ describe('Integration Tests', () => {
 **Файл:** `src/__tests__/integration.test.ts`
 
 **Acceptance Criteria:**
+
 - [ ] `npm run test` проходит все integration тесты
 - [ ] Тесты проверяют основные user flows
 - [ ] Используется React Testing Library best practices
@@ -2430,22 +2486,14 @@ describe('Integration Tests', () => {
 
 ```json
 {
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "@next/next/no-html-link-for-pages": "off",
     "react/no-unescaped-entities": "warn"
   },
-  "ignorePatterns": [
-    ".next",
-    "out",
-    "dist",
-    "node_modules"
-  ]
+  "ignorePatterns": [".next", "out", "dist", "node_modules"]
 }
 ```
 
@@ -2488,12 +2536,14 @@ coverage
 ```
 
 **Файлы:**
+
 - `.eslintrc.json` (обновить)
 - `.prettierrc.json` (проверить)
 - `.prettierignore` (новый)
 - `package.json` (обновить scripts)
 
 **Acceptance Criteria:**
+
 - [ ] `npm run lint` не выводит ошибок
 - [ ] `npm run format:check` не выводит ошибок
 - [ ] `npm run format` форматирует код автоматически
@@ -2561,6 +2611,7 @@ jobs:
 **Файл:** `.github/workflows/ci.yml`
 
 **Acceptance Criteria:**
+
 - [ ] Файл `.github/workflows/ci.yml` создан
 - [ ] Workflow запускается на push и PR
 - [ ] Все проверки проходят перед мержем
@@ -2580,7 +2631,7 @@ jobs:
 
 Создать `README.md`:
 
-```markdown
+````markdown
 # SDD Navigator Dashboard
 
 A specification coverage visualization dashboard built with Next.js, React, and TanStack Query.
@@ -2599,6 +2650,7 @@ This application displays metrics for specification coverage across modules, hel
 ```bash
 npm install
 ```
+````
 
 ## Running the Application
 
@@ -2675,6 +2727,7 @@ sdd-navigator-dashboard/
 Returns overall coverage metrics.
 
 **Response:**
+
 ```json
 {
   "overallCoverage": 80.7,
@@ -2691,12 +2744,14 @@ Returns overall coverage metrics.
 Returns list of modules with optional filtering.
 
 **Query Parameters:**
+
 - `search` (string) — Filter by module name
 - `status` (string) — Comma-separated: excellent,good,warning,critical
 - `page` (number) — Page number (default: 1)
 - `limit` (number) — Items per page (default: 50)
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -2724,6 +2779,7 @@ Returns list of modules with optional filtering.
 Returns detailed information about a specific module.
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -2819,7 +2875,8 @@ Connect your GitHub repository to Vercel — deployment happens automatically on
 ## License
 
 MIT
-```
+
+````
 
 **Файл:** `README.md`
 
@@ -2875,7 +2932,7 @@ npm run format
 # 9. Проверить git историю
 git log --oneline
 # (должны быть логичные коммиты для каждой задачи)
-```
+````
 
 **Checklist:**
 
@@ -2897,11 +2954,13 @@ git log --oneline
 - [ ] Все файлы сохранены и закоммичены
 
 **Файлы для cleanup:**
+
 - Удалить любые `.ts` files в `src/` с `console.log()`
 - Удалить commented code
 - Убедиться что все imports используются
 
 **Acceptance Criteria:**
+
 - [ ] Все проверки выше пройдены
 - [ ] Проект готов к сдаче
 - [ ] Код чист и профессионален
@@ -2914,37 +2973,37 @@ git log --oneline
 
 ## 📊 ФИНАЛЬНАЯ СВОДКА ЗАДАЧ
 
-| Блок | № | Задача | Время |
-|------|---|--------|-------|
-| **Setup** | T0 | Инициализация проекта | 30 мин |
-| | T1 | TypeScript типы | 25 мин |
-| | T2 | Mock Data Generator | 45 мин |
-| **API** | T3 | `/api/metrics` | 25 мин |
-| | T4 | `/api/modules` | 40 мин |
-| | T5 | `/api/modules/[id]` | 30 мин |
-| **Компоненты** | T8 | Layout + базовые компоненты | 30 мин |
-| | T9 | MetricsCard | 25 мин |
-| | T10 | CoverageChart | 30 мин |
-| | T11 | StatusDistributionChart | 30 мин |
-| | T12 | SpecsCoverageChart | 25 мин |
-| | T13 | Dashboard интеграция | 35 мин |
-| | T14 | ModuleSearchFilter | 30 мин |
-| | T15 | ModulesTable | 45 мин |
-| | T16 | ModulesList страница | 35 мин |
-| **Интеграция** | T6 | Zustand store | 20 мин |
-| | T7 | TanStack Query hooks | 45 мин |
-| | T8-U | Dashboard обновить | 30 мин |
-| | T16-U | ModulesList обновить | 30 мин |
-| **Детали** | T17 | SpecificationsTable | 25 мин |
-| | T18 | ModuleDetails | 30 мин |
-| | T19 | Маршрут `/modules/[id]` | 15 мин |
-| | T20 | Навигация | 10 мин |
-| **Качество** | T21 | Unit тесты | 40 мин |
-| | T22 | Integration тесты | 45 мин |
-| | T23 | ESLint + Prettier | 20 мин |
-| | T24 | GitHub Actions | 25 мин |
-| | T25 | README | 35 мин |
-| | T26 | Финальная проверка | 45 мин |
+| Блок           | №     | Задача                      | Время  |
+| -------------- | ----- | --------------------------- | ------ |
+| **Setup**      | T0    | Инициализация проекта       | 30 мин |
+|                | T1    | TypeScript типы             | 25 мин |
+|                | T2    | Mock Data Generator         | 45 мин |
+| **API**        | T3    | `/api/metrics`              | 25 мин |
+|                | T4    | `/api/modules`              | 40 мин |
+|                | T5    | `/api/modules/[id]`         | 30 мин |
+| **Компоненты** | T8    | Layout + базовые компоненты | 30 мин |
+|                | T9    | MetricsCard                 | 25 мин |
+|                | T10   | CoverageChart               | 30 мин |
+|                | T11   | StatusDistributionChart     | 30 мин |
+|                | T12   | SpecsCoverageChart          | 25 мин |
+|                | T13   | Dashboard интеграция        | 35 мин |
+|                | T14   | ModuleSearchFilter          | 30 мин |
+|                | T15   | ModulesTable                | 45 мин |
+|                | T16   | ModulesList страница        | 35 мин |
+| **Интеграция** | T6    | Zustand store               | 20 мин |
+|                | T7    | TanStack Query hooks        | 45 мин |
+|                | T8-U  | Dashboard обновить          | 30 мин |
+|                | T16-U | ModulesList обновить        | 30 мин |
+| **Детали**     | T17   | SpecificationsTable         | 25 мин |
+|                | T18   | ModuleDetails               | 30 мин |
+|                | T19   | Маршрут `/modules/[id]`     | 15 мин |
+|                | T20   | Навигация                   | 10 мин |
+| **Качество**   | T21   | Unit тесты                  | 40 мин |
+|                | T22   | Integration тесты           | 45 мин |
+|                | T23   | ESLint + Prettier           | 20 мин |
+|                | T24   | GitHub Actions              | 25 мин |
+|                | T25   | README                      | 35 мин |
+|                | T26   | Финальная проверка          | 45 мин |
 
 **ИТОГО: ~14.5 часов работы**
 
@@ -2953,6 +3012,7 @@ git log --oneline
 ## 🎯 РЕКОМЕНДУЕМЫЙ ПОРЯДОК ВЫПОЛНЕНИЯ
 
 ### День 1: Setup, API, Компоненты (8 часов)
+
 ```
 T0 (30м) → T1 (25м) → T2 (45м)
           ↓
@@ -2964,6 +3024,7 @@ T14 (30м) → T15 (45м) → T16 (35м)
 ```
 
 ### День 2: Интеграция, Детали, Финализация (6.5 часов)
+
 ```
 T6 (20м) → T7 (45м)
          ↓

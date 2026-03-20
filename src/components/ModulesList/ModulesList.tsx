@@ -1,43 +1,49 @@
-'use client'
+'use client';
 
-import { Suspense, useEffect } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useModules } from '@/src/hooks/useModules'
-import { useFilters } from '@/src/hooks/useFilters'
-import { LoadingSpinner } from '../common/LoadingSpinner'
-import { ModulesTable } from './ModulesTable'
+import { Suspense, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useModules } from '@/src/hooks/useModules';
+import { useFilters } from '@/src/hooks/useFilters';
+import { LoadingSpinner } from '../common/LoadingSpinner';
+import { ModulesTable } from './ModulesTable';
 
 // Компонент с фильтрами (требует Suspense для useSearchParams)
 function ModulesListContent() {
-  const router = useRouter()
-  const { searchQuery, selectedStatuses, setSearchQuery, toggleStatus, resetFilters, updateUrl } = useFilters()
+  const router = useRouter();
+  const { searchQuery, selectedStatuses, setSearchQuery, toggleStatus, resetFilters, updateUrl } =
+    useFilters();
 
   // Синхронизируем URL при изменении фильтров (без перезагрузки)
   useEffect(() => {
-    updateUrl()
-  }, [searchQuery, selectedStatuses, updateUrl])
+    updateUrl();
+  }, [searchQuery, selectedStatuses, updateUrl]);
 
   // Загружаем модули с фильтрами из Zustand store
-  const { data: modulesResponse, isLoading, isFetching, error } = useModules({
+  const {
+    data: modulesResponse,
+    isLoading,
+    isFetching,
+    error,
+  } = useModules({
     search: searchQuery,
     statuses: selectedStatuses,
     page: 1,
     limit: 100,
-  })
+  });
 
-  const modules = modulesResponse?.data || []
+  const modules = modulesResponse?.data || [];
 
   const handleModuleClick = (moduleId: number) => {
-    router.push(`/modules/${moduleId}`)
-  }
+    router.push(`/modules/${moduleId}`);
+  };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
   return (
@@ -45,10 +51,7 @@ function ModulesListContent() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="text-blue-600 hover:text-blue-700 hover:underline"
-            >
+            <Link href="/" className="text-blue-600 hover:text-blue-700 hover:underline">
               ← Back to Dashboard
             </Link>
             <h1 className="text-3xl font-bold text-gray-900">All Modules</h1>
@@ -67,7 +70,7 @@ function ModulesListContent() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          
+
           {/* Фильтры по статусу */}
           <div className="p-4 border-b border-gray-200">
             <div className="flex flex-wrap gap-4">
@@ -84,7 +87,7 @@ function ModulesListContent() {
               ))}
             </div>
           </div>
-          
+
           {/* Кнопка сброса */}
           <div className="p-4 bg-gray-50">
             <button
@@ -97,7 +100,13 @@ function ModulesListContent() {
         </div>
 
         {/* Таблица */}
-        <ModulesTable modules={modules} isLoading={isLoading} isFetching={isFetching} error={error} onModuleClick={handleModuleClick} />
+        <ModulesTable
+          modules={modules}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          error={error}
+          onModuleClick={handleModuleClick}
+        />
 
         {/* Информация о результатах */}
         <div className="mt-4 text-sm text-gray-600">
@@ -107,18 +116,20 @@ function ModulesListContent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // Обёртка с Suspense для useSearchParams
 export function ModulesList() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
       <ModulesListContent />
     </Suspense>
-  )
+  );
 }

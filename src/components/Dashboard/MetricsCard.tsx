@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { MetricsResponse } from '@/src/types'
+import { MetricsResponse } from '@/src/types';
 
 interface MetricsCardProps {
-  metrics: MetricsResponse | null
-  isLoading: boolean
-  error?: Error | null
+  metrics: MetricsResponse | null;
+  isLoading: boolean;
+  error?: Error | null;
 }
 
 export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
@@ -14,7 +14,7 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
       <div className=" bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-800">Failed to load metrics</p>
       </div>
-    )
+    );
   }
 
   if (isLoading || !metrics) {
@@ -27,7 +27,7 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
           <div className="h-4 bg-gray-200 rounded w-24" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -56,5 +56,5 @@ export function MetricsCard({ metrics, isLoading, error }: MetricsCardProps) {
         Last updated: {new Date(metrics.lastUpdated).toLocaleDateString()}
       </p>
     </div>
-  )
+  );
 }

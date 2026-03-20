@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { useModuleDetails } from '@/src/hooks/useModuleDetails'
-import { LoadingSpinner } from '../common/LoadingSpinner'
-import { ErrorMessage } from '../common/ErrorBoundary'
-import { SpecificationsTable } from './SpecificationsTable'
-import { STATUS_COLORS } from '@/src/constants'
+import Link from 'next/link';
+import { useModuleDetails } from '@/src/hooks/useModuleDetails';
+import { LoadingSpinner } from '../common/LoadingSpinner';
+import { ErrorMessage } from '../common/ErrorBoundary';
+import { SpecificationsTable } from './SpecificationsTable';
+import { STATUS_COLORS } from '@/src/constants';
 
 interface ModuleDetailsProps {
-  moduleId: number
+  moduleId: number;
 }
 
 export function ModuleDetails({ moduleId }: ModuleDetailsProps) {
-  const { data: module, isLoading, error } = useModuleDetails(moduleId)
+  const { data: module, isLoading, error } = useModuleDetails(moduleId);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
   if (error || !module) {
@@ -32,10 +32,10 @@ export function ModuleDetails({ moduleId }: ModuleDetailsProps) {
           <ErrorMessage message={error?.message || 'Module not found'} />
         </div>
       </div>
-    )
+    );
   }
 
-  const colors = STATUS_COLORS[module.status]
+  const colors = STATUS_COLORS[module.status];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -49,7 +49,9 @@ export function ModuleDetails({ moduleId }: ModuleDetailsProps) {
         <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-gray-900">{module.name}</h1>
-            <span className={`inline-block px-4 py-2 rounded-lg text-sm font-semibold ${colors.bg} ${colors.text}`}>
+            <span
+              className={`inline-block px-4 py-2 rounded-lg text-sm font-semibold ${colors.bg} ${colors.text}`}
+            >
               {module.status}
             </span>
           </div>
@@ -81,5 +83,5 @@ export function ModuleDetails({ moduleId }: ModuleDetailsProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
