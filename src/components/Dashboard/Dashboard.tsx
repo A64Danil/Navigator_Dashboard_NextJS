@@ -28,16 +28,25 @@ function DashboardContent() {
   // Используем хуки для данных
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useMetrics()
 
-  // Загружаем модули с фильтрами из Zustand store
-  const { data: modulesResponse, isLoading: modulesLoading, error: modulesError } = useModules({
+  // Загружаем ВСЕ модули для графиков (без фильтров)
+  const { data: allModulesResponse, isLoading: allModulesLoading } = useModules({
+    search: '',
+    statuses: [],
+    page: 1,
+    limit: 100,
+  })
+
+  // Загружаем модули с фильтрами из Zustand store (для таблицы)
+  const { data: filteredModulesResponse, isLoading: filteredLoading } = useModules({
     search: searchQuery,
     statuses: selectedStatuses,
     page: 1,
     limit: 100,
   })
 
-  const allModules = modulesResponse?.data || []
-  const isLoading = metricsLoading || modulesLoading
+  const allModules = allModulesResponse?.data || []
+  const filteredModules = filteredModulesResponse?.data || []
+  const isLoading = metricsLoading || allModulesLoading || filteredLoading
 
   if (isLoading) {
     return (
@@ -122,7 +131,7 @@ function DashboardContent() {
             
             {/* Таблица модулей */}
             <ModulesTable
-              modules={allModules.slice(0, 10)}
+              modules={filteredModules.slice(0, 10)}
               isLoading={false}
               onModuleClick={(moduleId) => {
                 window.location.href = `/modules/${moduleId}`
@@ -131,7 +140,7 @@ function DashboardContent() {
             
             {/* Информация о количестве */}
             <div className="p-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
-              Showing {Math.min(10, allModules.length)} of {allModules.length} modules
+              Showing {Math.min(10, filteredModules.length)} of {allModules.length} modules
             </div>
           </div>
         </div>

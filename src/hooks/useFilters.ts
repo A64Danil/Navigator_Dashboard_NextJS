@@ -43,8 +43,15 @@ export function useFilters() {
     if (searchQuery) params.set('search', searchQuery)
     if (selectedStatuses.length > 0) params.set('status', selectedStatuses.join(','))
     
-    const queryString = params.toString()
-    router.replace(queryString ? `?${queryString}` : '/', { scroll: false })
+    const newQueryString = params.toString()
+    const currentPath = window.location.pathname
+    const currentQueryString = window.location.search.slice(1)
+    
+    // Не обновляем если URL уже соответствует
+    if (newQueryString === currentQueryString) return
+    if (!newQueryString && !currentQueryString) return
+    
+    router.replace(newQueryString ? `?${newQueryString}` : '/', { scroll: false })
   }, [router, searchQuery, selectedStatuses])
 
   // Оборачиваем setSearchQuery чтобы обновлять URL
