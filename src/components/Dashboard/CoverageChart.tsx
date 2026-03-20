@@ -45,13 +45,17 @@ export function CoverageChart({ trend, isLoading, error }: CoverageChartProps) {
   })
 
   return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+    <div className="p-4 bg-white border border-gray-200 rounded-lg">
       <h3 className="text-lg font-semibold mb-4">Coverage Trend (14 days)</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
-          <YAxis domain={[0, 100]} label={{ value: 'Coverage %', angle: -90, position: 'insideLeft' }} />
+          <YAxis 
+            domain={[0, 100]} 
+            tickMargin={10}
+            label={{ value: 'Coverage %', angle: -90, position: 'outside', dx: -20 }}
+          />
           <Tooltip />
           <Legend />
           <Line type="monotone" dataKey="coverage" stroke="#3b82f6" name="Coverage %" dot={{ fill: '#3b82f6' }} />
