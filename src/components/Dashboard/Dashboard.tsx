@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useMetrics } from '@/src/hooks/useMetrics'
 import { useModules } from '@/src/hooks/useModules'
 import { LoadingSpinner } from '../common/LoadingSpinner'
@@ -8,6 +9,9 @@ import { MetricsCard } from './MetricsCard'
 import { CoverageChart } from './CoverageChart'
 import { StatusDistributionChart } from './StatusDistributionChart'
 import { SpecsCoverageChart } from './SpecsCoverageChart'
+import { ModulesTable } from '../ModulesList/ModulesTable'
+import Link from 'next/link'
+import { ModuleStatus } from '@/src/types'
 
 export function Dashboard() {
   // Используем хуки вместо моков
@@ -21,7 +25,23 @@ export function Dashboard() {
     limit: 100,
   })
 
-  const modules = modulesResponse?.data || []
+  // Состояние для фильтрации на клиенте
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedStatuses, setSelectedStatuses] = useState<ModuleStatus[]>([])
+
+  const allModules = modulesResponse?.data || []
+  
+  // Клиентская фильтрация модулей
+  const filteredModules = allModules.filter((module) => {
+    const matchesSearch = searchQuery
+      ? module.name.toLowerCase().includes(searchQuery.toLowerCase())
+      : true
+    const matchesStatus = selectedStatuses.length > 0
+      ? selectedStatuses.includes(module.status)
+      : true
+    return matchesSearch && matchesStatus
+  })
+
   const isLoading = metricsLoading || modulesLoading
 
   if (isLoading) {
@@ -33,7 +53,7 @@ export function Dashboard() {
   }
 
   // Проверяем что все данные загружены перед рендером
-  if (!metrics || !modules || modules.length === 0) {
+  if (!metrics || !allModules || allModules.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <ErrorMessage message="Failed to load dashboard data" />
@@ -57,18 +77,72 @@ export function Dashboard() {
         {/* Три карточки в одну строку - Overall Coverage, Modules by Status, Specifications Coverage */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 p-6 bg-white border border-gray-200 rounded-lg">
           <MetricsCard metrics={metrics || null} isLoading={false} />
-          <StatusDistributionChart modules={modules} isLoading={false} />
+          <StatusDistributionChart modules={allModules} isLoading={false} />
           <SpecsCoverageChart metrics={metrics || null} isLoading={false} />
         </div>
 
-        {/* Кнопка для перехода на список модулей */}
+        {/* Секция модулей с фильтрами */}
         <div className="mb-8">
-          <a
-            href="/modules"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            View All Modules
-          </a>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Modules</h2>
+            <Link
+              href="/modules"
+              className="text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View All Modules →
+            </Link>
+          </div>
+          
+          {/* Фильтры и таблица модулей */}
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            {/* Поиск и фильтры по статусу */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search modules..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              {/* Фильтры по статусу */}
+              <div className="flex flex-wrap gap-4">
+                {(['excellent', 'good', 'warning', 'critical'] as const).map((status) => (
+                  <label key={status} className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedStatuses.includes(status)}
+                      onChange={() => {
+                        setSelectedStatuses((prev) =>
+                          prev.includes(status)
+                            ? prev.filter((s) => s !== status)
+                            : [...prev, status]
+                        )
+                      }}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700 capitalize">{status}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
+            {/* Таблица модулей */}
+            <ModulesTable
+              modules={filteredModules.slice(0, 10)}
+              isLoading={false}
+              onModuleClick={(moduleId) => {
+                window.location.href = `/modules/${moduleId}`
+              }}
+            />
+            
+            {/* Информация о количестве */}
+            <div className="p-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
+              Showing {Math.min(10, filteredModules.length)} of {allModules.length} modules
+            </div>
+          </div>
         </div>
       </div>
     </div>
