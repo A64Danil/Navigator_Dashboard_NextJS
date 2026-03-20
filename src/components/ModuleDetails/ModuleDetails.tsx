@@ -5,16 +5,10 @@ import { useModuleDetails } from '@/src/hooks/useModuleDetails'
 import { LoadingSpinner } from '../common/LoadingSpinner'
 import { ErrorMessage } from '../common/ErrorBoundary'
 import { SpecificationsTable } from './SpecificationsTable'
+import { STATUS_COLORS } from '@/src/constants'
 
 interface ModuleDetailsProps {
   moduleId: number
-}
-
-const STATUS_COLORS = {
-  excellent: { bg: 'bg-green-100', text: 'text-green-800' },
-  good: { bg: 'bg-emerald-100', text: 'text-emerald-800' },
-  warning: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  critical: { bg: 'bg-red-100', text: 'text-red-800' },
 }
 
 export function ModuleDetails({ moduleId }: ModuleDetailsProps) {

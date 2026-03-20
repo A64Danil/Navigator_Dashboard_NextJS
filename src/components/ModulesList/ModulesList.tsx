@@ -19,7 +19,7 @@ function ModulesListContent() {
   }, [searchQuery, selectedStatuses, updateUrl])
 
   // Загружаем модули с фильтрами из Zustand store
-  const { data: modulesResponse, isLoading, error } = useModules({
+  const { data: modulesResponse, isLoading, isFetching, error } = useModules({
     search: searchQuery,
     statuses: selectedStatuses,
     page: 1,
@@ -97,7 +97,7 @@ function ModulesListContent() {
         </div>
 
         {/* Таблица */}
-        <ModulesTable modules={modules} isLoading={isLoading} error={error} onModuleClick={handleModuleClick} />
+        <ModulesTable modules={modules} isLoading={isLoading} isFetching={isFetching} error={error} onModuleClick={handleModuleClick} />
 
         {/* Информация о результатах */}
         <div className="mt-4 text-sm text-gray-600">

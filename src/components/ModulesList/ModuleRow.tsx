@@ -1,13 +1,7 @@
 'use client'
 
 import { Module } from '@/src/types'
-
-const STATUS_COLORS = {
-  excellent: { bg: 'bg-green-100', text: 'text-green-800' },
-  good: { bg: 'bg-emerald-100', text: 'text-emerald-800' },
-  warning: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-  critical: { bg: 'bg-red-100', text: 'text-red-800' },
-}
+import { STATUS_COLORS } from '@/src/constants'
 
 interface ModuleRowProps {
   module: Module

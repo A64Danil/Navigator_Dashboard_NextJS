@@ -7,11 +7,12 @@ import { ModuleRow } from './ModuleRow'
 interface ModulesTableProps {
   modules: Module[]
   isLoading: boolean
+  isFetching?: boolean
   error?: Error | null
   onModuleClick?: (moduleId: number) => void
 }
 
-export function ModulesTable({ modules, isLoading, error, onModuleClick }: ModulesTableProps) {
+export function ModulesTable({ modules, isLoading, isFetching, error, onModuleClick }: ModulesTableProps) {
   if (error) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
@@ -60,9 +61,11 @@ export function ModulesTable({ modules, isLoading, error, onModuleClick }: Modul
   return (
     <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <TableHeader />
-      <List height={600} itemCount={modules.length} itemSize={60} width="100%">
-        {Row}
-      </List>
+      <div className={isFetching ? 'opacity-70' : ''}>
+        <List height={600} itemCount={modules.length} itemSize={60} width="100%">
+          {Row}
+        </List>
+      </div>
     </div>
   )
 }

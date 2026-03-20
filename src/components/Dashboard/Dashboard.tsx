@@ -37,7 +37,7 @@ function DashboardContent() {
   })
 
   // Загружаем модули с фильтрами из Zustand store (для таблицы)
-  const { data: filteredModulesResponse, isLoading: filteredLoading } = useModules({
+  const { data: filteredModulesResponse, isLoading: filteredLoading, isFetching: filteredFetching } = useModules({
     search: searchQuery,
     statuses: selectedStatuses,
     page: 1,
@@ -133,6 +133,7 @@ function DashboardContent() {
             <ModulesTable
               modules={filteredModules.slice(0, 10)}
               isLoading={false}
+              isFetching={filteredFetching}
               onModuleClick={(moduleId) => {
                 window.location.href = `/modules/${moduleId}`
               }}
