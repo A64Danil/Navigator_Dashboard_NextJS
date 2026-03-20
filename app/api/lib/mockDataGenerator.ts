@@ -116,13 +116,17 @@ export function generateMetrics(): MetricsResponse {
   const specsCovered = modules.reduce((sum, m) => sum + m.covered, 0)
   const overallCoverage = Math.round((specsCovered / specsTotal) * 1000) / 10
 
-  // Generate 14-day trend (gradual growth)
+  // Generate 14-day trend (volatile growth with occasional dips)
   resetFaker()
   const trend: number[] = []
-  let currentCoverage = overallCoverage - 5
+  let currentCoverage = overallCoverage - 25 // Start 25% lower
   for (let i = 0; i < 14; i++) {
     trend.push(Math.round(currentCoverage * 10) / 10)
-    currentCoverage += faker.number.float({ min: 0.3, max: 0.7 })
+    // Randomly go up or down with overall upward bias
+    const change = faker.number.float({ min: -4.5, max: 7.5 }) // Can drop or rise
+    currentCoverage += change
+    // Clamp to valid range and ensure overall progress
+    if (currentCoverage > overallCoverage) currentCoverage = overallCoverage
   }
   trend[13] = overallCoverage // last day = current coverage
 
